@@ -10,7 +10,7 @@ from sys import argv
 import time
 import json 
 
-serverHost = "localhost"
+serverHost = ""
 serverPort = 8080
 
 class MyServer(BaseHTTPRequestHandler):
@@ -19,15 +19,15 @@ class MyServer(BaseHTTPRequestHandler):
     self.send_header("Content-type", "text/html")
     self.end_headers()
     response = '''<html>
-      <head>
-        <title>AWS WebServer</title>
-      </head>
-      <body>
-        <p>Request Path: <pre>{}</pre></p>
-        <p>Client IP: <pre>{}</pre></p>
-        <p>Headers: <pre>{}</pre></p>
-      </body>
-    </html>'''
+  <head>
+    <title>AWS WebServer</title>
+  </head>
+  <body>
+    <p>Request Path: <pre>{}</pre></p>
+    <p>Client IP: <pre>{}</pre></p>
+    <p>Headers: <pre>{}</pre></p>
+  </body>
+</html>'''
     self.wfile.write(bytes(response.format(self.path, json.dumps(self.client_address), self.headers.as_string()), "utf-8"))
 
 if __name__ == "__main__": 
