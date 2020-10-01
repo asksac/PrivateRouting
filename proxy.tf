@@ -1,7 +1,8 @@
 data "template_file" "proxy_user_data_script" {
   template = file("user_data_haproxy.tpl")
   vars = {
-    proxy_listen_port = var.proxy_listen_port
+    proxy_listen_http_port = var.proxy_listen_http_port
+    proxy_listen_ssh_port = var.proxy_listen_ssh_port
     websvr_dns = aws_instance.websvr.public_dns
     websvr_listen_port = var.websvr_listen_port
   }
@@ -18,11 +19,16 @@ resource "aws_security_group" "proxy_sg" {
   }
   ingress {
     cidr_blocks   = ["0.0.0.0/0"]
-    from_port     = var.proxy_listen_port
-    to_port       = var.proxy_listen_port
+    from_port     = var.proxy_listen_ssh_port
+    to_port       = var.proxy_listen_ssh_port
     protocol      = "tcp"
   }
-  # Terraform removes the default rule
+  ingress {
+    cidr_blocks   = ["0.0.0.0/0"]
+    from_port     = var.proxy_listen_http_port
+    to_port       = var.proxy_listen_http_port
+    protocol      = "tcp"
+  }
   egress {
     from_port     = 0
     to_port       = 0
