@@ -10,6 +10,12 @@ space via a Virtual Private Gateway or VPC peering.
 
 ![AWS VPC network diagram](./docs/images/aws_vpc_diagram.png)
 
+## Deployment
+
+### 1. Build the AMI
+
+![AMI creation pipeline using Hashicorp Packer](./docs/images/packer_pipeline.png)
+
 ## License
 
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
