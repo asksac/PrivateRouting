@@ -54,6 +54,16 @@ variable "vpc2_subnet_priv1_name" {
   default = "vpc2_priv1"
 }
 
+variable "vpc2_subnet_pub1_cidr" {
+  type    = string
+  default = "172.16.2.0/24"
+}
+
+variable "vpc2_subnet_pub1_name" {
+  type    = string
+  default = "vpc2_pub1"
+}
+
 variable "vpc2_subnet_nlb_priv_ip" {
   type    = string
   default = "172.16.1.10"
@@ -97,4 +107,22 @@ variable "app_shortcode" {
 variable "ec2_ssh_keypair_name" {
   type          = string
   description   = "Specify name of an existing EC2 keypair, e.g. my_key"
+}
+
+variable "websvr_listen_port" {
+  type          = string
+  default       = "8080"
+  description   = "WebServer Listen Port, e.g. 8080"
+}
+
+variable "proxy_listen_port" {
+  type          = string
+  default       = "80"
+  description   = "HAProxy Listen Port, e.g. 80"
+}
+
+variable "nlb_listen_port" {
+  type          = string
+  default       = "8888"
+  description   = "NLB Listen Port, e.g. 8888"
 }
