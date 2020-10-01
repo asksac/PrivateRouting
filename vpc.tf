@@ -3,8 +3,8 @@
 
 data "aws_availability_zones" "available_azs" {}
 
-# -------- #
-## VPC #1 ##
+# ------- #
+## VPC 1 ##
 
 resource "aws_vpc" "vpc1" {
   cidr_block                        = var.vpc1_cidr
@@ -22,8 +22,8 @@ resource "aws_subnet" "vpc1_subnet_priv1" {
   tags                    = merge(local.common_tags, map("Name", var.vpc1_subnet_priv1_name))
 }
 
-# -------- #
-## VPC #2 ##
+# ------- #
+## VPC 2 ##
 
 resource "aws_vpc" "vpc2" {
   cidr_block                        = var.vpc2_cidr
@@ -41,27 +41,8 @@ resource "aws_subnet" "vpc2_subnet_priv1" {
   tags                    = merge(local.common_tags, map("Name", var.vpc2_subnet_priv1_name))
 }
 
-resource "aws_subnet" "vpc2_subnet_pub1" {
-  vpc_id                  = aws_vpc.vpc2.id
-  availability_zone       = data.aws_availability_zones.available_azs.names[0]
-  cidr_block              = var.vpc2_subnet_pub1_cidr
-  map_public_ip_on_launch = true
-  tags                    = merge(local.common_tags, map("Name", var.vpc2_subnet_pub1_name))
-}
-
-resource "aws_internet_gateway" "vpc2_igw" {
-  vpc_id                  = aws_vpc.vpc2.id
-  tags                    = merge(local.common_tags, map("Name", "${var.app_shortcode}_${var.vpc2_name}_igw"))
-}
-
-resource "aws_route" "vpc2_igw_route" {
-  route_table_id            = aws_vpc.vpc2.main_route_table_id
-  destination_cidr_block    = "0.0.0.0/0"
-  gateway_id                 = aws_internet_gateway.vpc2_igw.id
-}
-
-# -------- #
-## VPC #3 ##
+# ------- #
+## VPC 3 ##
 
 resource "aws_vpc" "vpc3" {
   cidr_block                        = var.vpc3_cidr
@@ -90,8 +71,8 @@ resource "aws_route" "vpc3_igw_route" {
   gateway_id                 = aws_internet_gateway.vpc3_igw.id
 }
 
-# --------------------- #
-## VPC #2 + #3 Peering ##
+# ------------------- #
+## VPC 2 + 3 Peering ##
 
 resource "aws_vpc_peering_connection" "vpc2_vpc3_peering" {
   vpc_id                              = aws_vpc.vpc2.id
