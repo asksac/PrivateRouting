@@ -45,8 +45,8 @@ resource "aws_instance" "websvr" {
   tags                    = merge(local.common_tags, map("Name", "${var.app_shortcode}_websvr"))
 }
 
-output "websvr_arn" {
-  value = aws_instance.websvr.arn
+output "websvr_dns" {
+  value = aws_instance.websvr.public_dns
 }
 
 output "websvr_base_url" {
