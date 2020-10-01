@@ -20,14 +20,15 @@ class MyServer(BaseHTTPRequestHandler):
     self.end_headers()
     response = '''<html>
   <head>
-    <title>AWS WebServer</title>
+    <title>AWSome WebServer</title>
   </head>
   <body>
     <p>Request Path: <pre>{}</pre></p>
     <p>Client IP: <pre>{}</pre></p>
     <p>Headers: <pre>{}</pre></p>
   </body>
-</html>'''
+</html>
+'''
     self.wfile.write(bytes(response.format(self.path, json.dumps(self.client_address), self.headers.as_string()), "utf-8"))
 
 if __name__ == "__main__": 
