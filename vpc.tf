@@ -9,8 +9,8 @@ data "aws_availability_zones" "available_azs" {}
 resource "aws_vpc" "vpc1" {
   cidr_block                        = var.vpc1_cidr
   assign_generated_ipv6_cidr_block  = false
-  enable_dns_support                = false
-  enable_dns_hostnames              = false
+  enable_dns_support                = true
+  enable_dns_hostnames              = true
   tags                              = merge(local.common_tags, map("Name", "${var.app_shortcode}_${var.vpc1_name}"))
 }
 
@@ -96,8 +96,39 @@ resource "aws_route" "vpc2_peering_route" {
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc2_vpc3_peering.id
 }
 
-resource "aws_route" "vpc3_peering_route" {
+resource "aws_route" "vpc3_vpc2_peering_route" {
   route_table_id            = aws_vpc.vpc3.main_route_table_id
   destination_cidr_block    = aws_vpc.vpc2.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc2_vpc3_peering.id
+}
+
+# ------------------- #
+## VPC 1 + 3 Peering ##
+
+resource "aws_vpc_peering_connection" "vpc1_vpc3_peering" {
+  vpc_id                              = aws_vpc.vpc1.id
+  peer_vpc_id                         = aws_vpc.vpc3.id
+  auto_accept                         = true
+
+  accepter {
+    allow_remote_vpc_dns_resolution   = true
+  }
+
+  requester {
+    allow_remote_vpc_dns_resolution   = true
+  }
+
+  tags                                = merge(local.common_tags, map("Name", "${var.vpc1_name} to ${var.vpc3_name} peering"))
+}
+
+resource "aws_route" "vpc1_peering_route" {
+  route_table_id            = aws_vpc.vpc1.main_route_table_id
+  destination_cidr_block    = aws_vpc.vpc3.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc3_peering.id
+}
+
+resource "aws_route" "vpc3_vpc_1_peering_route" {
+  route_table_id            = aws_vpc.vpc3.main_route_table_id
+  destination_cidr_block    = aws_vpc.vpc1.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc3_peering.id
 }
