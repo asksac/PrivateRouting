@@ -17,7 +17,7 @@ defaults
 
 frontend www
   mode http
-  bind *:${proxy_listen_port}
+  bind *:${proxy_listen_http_port}
   default_backend websvr_be
 
 backend websvr_be
@@ -26,7 +26,7 @@ backend websvr_be
 
 frontend ssh_fe
   mode tcp
-  bind *:2222
+  bind *:${proxy_listen_ssh_port}
   default_backend ssh_be
   timeout client 1h
 
