@@ -1,3 +1,4 @@
+/*
 # -----
 # Creates a public subnet and an IGW in VPC2
 
@@ -49,3 +50,4 @@ resource "aws_route_table_association" "nat_route_assoc_1" {
   subnet_id = aws_subnet.vpc2_subnet_priv1.id
   route_table_id = aws_route_table.nat_route_tab.id
 }
+*/
