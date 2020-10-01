@@ -1,5 +1,5 @@
 resource "aws_lb" "nlb" {
-  name                    = "vpc2_nlb"
+  name                    = "vpc2-nlb"
   internal                = true
   load_balancer_type      = "network"
 
@@ -13,7 +13,7 @@ resource "aws_lb" "nlb" {
 
 resource "aws_lb_listener" "nlb_listener" {
   load_balancer_arn = aws_lb.nlb.arn
-  port              = "8080" # inbound port of NLB
+  port              = var.nlb_listen_port # inbound port of NLB
   protocol          = "TCP"
 
   default_action {
@@ -24,14 +24,15 @@ resource "aws_lb_listener" "nlb_listener" {
 
 resource "aws_lb_target_group" "nlb_tg" {
   name        = "nlb-target-group"
-  port        = "8080" # outbound port of NLB / inbound of targets
+  port        = var.proxy_listen_port # outbound port of NLB / inbound of targets
   protocol    = "TCP"
-  target_type = "ip"
+  target_type = "instance"
   vpc_id      = aws_vpc.vpc2.id
 }
 
 resource "aws_lb_target_group_attachment" "nlb_nat" {
-  target_group_arn = aws_lb_target_group.nlb_tg.arn
-  target_id        = aws_instance.proxy.id
+  target_group_arn  = aws_lb_target_group.nlb_tg.arn
+  target_id         = aws_instance.proxy.id
+  depends_on        = [aws_instance.proxy]
 }
 
