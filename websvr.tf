@@ -3,39 +3,8 @@ data "template_file" "websvr_user_data_script" {
 #!/bin/bash -xe
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-yum -y install git python3 python3-pip
-
-# download source files from github
-git clone https://github.com/asksac/PrivateRouting.git
-cd PrivateRouting
-
-python3 ./src/webapp/server.py 8080
+sudo -b -u ec2-user python3 /home/ec2-user/PrivateRouting/src/webapp/server.py ${var.websvr_listen_port} &
 EOF
-}
-
-data "aws_ami" "ec2_ami" {
-  most_recent = true
-  owners      = ["amazon"]
-
-  filter {
-    name      = "name"
-    values    = ["amzn2-ami-hvm-2*"]
-  }
-
-  filter {
-    name      = "architecture"
-    values    = ["x86_64"]
-  }
-
-  filter {
-    name      = "root-device-type"
-    values    = ["ebs"]
-  }
-
-  filter {
-    name      = "virtualization-type"
-    values    = ["hvm"]
-  }
 }
 
 resource "aws_security_group" "websvr_sg" {
@@ -49,8 +18,8 @@ resource "aws_security_group" "websvr_sg" {
   }
   ingress {
     cidr_blocks   = ["0.0.0.0/0"]
-    from_port     = 8080
-    to_port       = 8080
+    from_port     = var.websvr_listen_port
+    to_port       = var.websvr_listen_port
     protocol      = "tcp"
   }
   # Terraform removes the default rule
@@ -69,6 +38,7 @@ resource "aws_instance" "websvr" {
   vpc_security_group_ids  = [aws_security_group.websvr_sg.id]
   key_name                = var.ec2_ssh_keypair_name
   user_data               = data.template_file.websvr_user_data_script.template
+  source_dest_check       = false
 
   depends_on              = [aws_internet_gateway.vpc3_igw]
 
@@ -80,5 +50,5 @@ output "websvr_arn" {
 }
 
 output "websvr_base_url" {
-  value = "http://${aws_instance.websvr.public_dns}:8080/"
+  value = "http://${aws_instance.websvr.public_dns}:${var.websvr_listen_port}/"
 }
