@@ -1,11 +1,10 @@
 data "template_file" "proxy_user_data_script" {
-  template = <<EOF
-#!/bin/bash -xe
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-
-yum -y install git python3 python3-pip 
-yum -y install haproxy
-EOF
+  template = file("user_data_haproxy.tpl")
+  vars = {
+    proxy_listen_port = var.proxy_listen_port
+    websvr_dns = aws_instance.websvr.public_dns
+    websvr_listen_port = var.websvr_listen_port
+  }
 }
 
 resource "aws_security_group" "proxy_sg" {
@@ -19,8 +18,8 @@ resource "aws_security_group" "proxy_sg" {
   }
   ingress {
     cidr_blocks   = ["0.0.0.0/0"]
-    from_port     = 8080
-    to_port       = 8080
+    from_port     = var.proxy_listen_port
+    to_port       = var.proxy_listen_port
     protocol      = "tcp"
   }
   # Terraform removes the default rule
@@ -38,7 +37,8 @@ resource "aws_instance" "proxy" {
   subnet_id               = aws_subnet.vpc2_subnet_priv1.id
   vpc_security_group_ids  = [aws_security_group.proxy_sg.id]
   key_name                = var.ec2_ssh_keypair_name
-  user_data               = data.template_file.proxy_user_data_script.template
+  user_data               = data.template_file.proxy_user_data_script.rendered
+  source_dest_check       = false
 
   tags                    = merge(local.common_tags, map("Name", "${var.app_shortcode}_proxy"))
 }
