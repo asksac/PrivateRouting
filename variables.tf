@@ -115,14 +115,26 @@ variable "websvr_listen_port" {
   description   = "WebServer Listen Port, e.g. 8080"
 }
 
-variable "proxy_listen_port" {
-  type          = string
-  default       = "80"
-  description   = "HAProxy Listen Port, e.g. 80"
-}
-
-variable "nlb_listen_port" {
+variable "proxy_listen_http_port" {
   type          = string
   default       = "8888"
-  description   = "NLB Listen Port, e.g. 8888"
+  description   = "HAProxy Listen Port for HTTP, e.g. 8888"
+}
+
+variable "proxy_listen_ssh_port" {
+  type          = string
+  default       = "2222"
+  description   = "HAProxy Listen Port for SSH, e.g. 2222"
+}
+
+variable "nlb_listen_http_port" {
+  type          = string
+  default       = "80"
+  description   = "NLB Listen Port for HTTP, e.g. 80"
+}
+
+variable "nlb_listen_ssh_port" {
+  type          = string
+  default       = "22"
+  description   = "NLB Listen Port for SSH, e.g. 22"
 }
