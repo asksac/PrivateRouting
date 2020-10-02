@@ -1,8 +1,12 @@
-variable "profile" {}
+variable "profile" {
+  default = "terraform"
+}
 variable "region" {
   default = "us-east-1"
 }
-variable "appname" {}
+variable "appname" {
+  default = "PrivateRouting"
+}
 
 source "amazon-ebs" "ec2_ami" {
   profile                   = "${var.profile}"
@@ -29,6 +33,10 @@ build {
   ]
 
   provisioner "shell" {
-      script                = "packer_provisioner.sh"
+    inline                  = [
+      "#!/bin/bash -xe", 
+      "sudo yum -y install git python3 python3-pip haproxy", 
+      "git clone https://github.com/asksac/PrivateRouting.git"
+    ]
   }
 }
