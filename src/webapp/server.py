@@ -5,12 +5,11 @@ Usage:
   ./server.py [<port>]
 """
 
-import os, signal, sys
+import os, signal, sys, time
 import logging, logging.handlers
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from sys import argv
-import time
-import json 
+import ssl
+import json, argparse
 
 def exit_handler(sig, frame): 
   logging.info('Exit handler invoked, preparing to exit gracefully.')
@@ -42,7 +41,7 @@ class MyServer(BaseHTTPRequestHandler):
 
 # define default parameter values
 defaults = dict(
-  LOG_FILENAME        = '/var/log/PrivateRouting/websvr.log', 
+  LOG_FILENAME        = '/var/log/PrivateRouting/websvr_%s.log', 
   LOG_LEVEL           = 'INFO', 
   MAX_LOG_FILESIZE    = 10*1024*1024, # 10 Mbs
 )
@@ -51,7 +50,19 @@ if __name__ == '__main__':
   serverHost = ''
   serverPort = 8080
 
-  logFileHandler = logging.handlers.RotatingFileHandler(defaults['LOG_FILENAME'], mode = 'a', maxBytes = defaults['MAX_LOG_FILESIZE'], backupCount = 5)
+  parser = argparse.ArgumentParser(description='Run a simple http/https webserver')
+  parser.add_argument('port', metavar = 'port', type = int, nargs='?', default = 8080, 
+                      help = 'listen port number (default 8080)')
+  parser.add_argument('--tls', dest = 'tls', action = 'store_true', default = False,
+                      help = 'turns on https mode, only tls connections are accepted (default False)')
+  parser.add_argument('--keyfile', dest = 'keyfile', default = 'key.pem',
+                      help = 'full path to key.pem file')
+  parser.add_argument('--certfile', dest = 'certfile', default = 'cert.pem',
+                      help = 'full path to cert.pem file')
+
+  args = parser.parse_args()
+
+  logFileHandler = logging.handlers.RotatingFileHandler(defaults['LOG_FILENAME'] % (serverPort), mode = 'a', maxBytes = defaults['MAX_LOG_FILESIZE'], backupCount = 5)
   stdoutHandler = logging.StreamHandler(sys.stdout)
   logging.basicConfig(handlers = [stdoutHandler, logFileHandler], format = '%(asctime)s - %(levelname)s - %(message)s', level = defaults['LOG_LEVEL'])
 
@@ -59,12 +70,19 @@ if __name__ == '__main__':
   signal.signal(signal.SIGTERM, exit_handler)
   print('Press Ctrl+C to exit')
 
-  if len(argv) > 1:
-    serverPort = int(argv[1])
+  serverPort = args.port
+  tlsEnabled = args.tls
+  scheme = 'http'
 
   while True: 
     webServer = HTTPServer((serverHost, serverPort), MyServer)
-    logging.info('Server started http://%s:%s' % (serverHost, serverPort))
+    if tlsEnabled: 
+      webServer.socket = ssl.wrap_socket(webServer.socket, 
+        keyfile=args.keyfile, 
+        certfile=args.certfile, server_side=True)
+      scheme = 'https'
+
+    logging.info('Server started %s://%s:%s/' % (scheme, serverHost or 'localhost', serverPort))
 
     try:
       webServer.serve_forever()
