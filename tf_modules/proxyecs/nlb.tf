@@ -37,8 +37,23 @@ resource "aws_lb_target_group" "nlb_tg_ecs" {
   target_type         = "ip"
   vpc_id              = var.vpc_id
 
+  health_check {
+    healthy_threshold = 2
+
+  }
+
   lifecycle {
     create_before_destroy = true
     ignore_changes        = [name]
+  }
+}
+
+resource "aws_vpc_endpoint_service" "vpces_nlb" {
+  acceptance_required         = false
+  network_load_balancer_arns  = [ aws_lb.nlb.arn ]
+  tags                        = merge(var.common_tags, map("Name", "${var.app_shortcode}_nlb_endpointsvc"))
+
+  lifecycle {
+    create_before_destroy     = true
   }
 }
