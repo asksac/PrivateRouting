@@ -32,7 +32,7 @@ build {
     inline                  = [
       "#!/bin/bash -xe", 
       "sudo yum -y update", 
-      "sudo yum -y install git python3 python3-pip", 
+      "sudo yum -y install git python3 python3-pip awscli", 
       "sudo amazon-linux-extras enable haproxy2", 
       "sudo yum -y install haproxy2", 
       "git clone https://github.com/asksac/PrivateRouting.git"
