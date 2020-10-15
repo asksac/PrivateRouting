@@ -20,6 +20,10 @@ variable "source_cidr_blocks" {
   type = list
 }
 
+variable "image_uri" {
+  description         = "HAProxy Docker container image URI with tag"
+}
+
 variable "proxy_config" {
   type = object({
     service_name      = string
