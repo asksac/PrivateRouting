@@ -32,3 +32,10 @@ override.tf.json
 # exclude key files from version control
 *.pem
 !config/ssl/*.pem
+
+# ignore packer variables file
+*.pkrvars.json
+*.pkrvars.hcl
+
+# ignore test folder
+test/*
