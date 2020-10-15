@@ -22,6 +22,14 @@ resource "aws_subnet" "vpc1_subnet_priv1" {
   tags                    = merge(local.common_tags, map("Name", var.vpc1_subnet_priv1_name))
 }
 
+resource "aws_subnet" "vpc1_subnet_priv2" {
+  vpc_id                  = aws_vpc.vpc1.id
+  availability_zone       = data.aws_availability_zones.available_azs.names[1]
+  cidr_block              = var.vpc1_subnet_priv2_cidr
+  map_public_ip_on_launch = false
+  tags                    = merge(local.common_tags, map("Name", var.vpc1_subnet_priv2_name))
+}
+
 # ------- #
 ## VPC 2 ##
 
