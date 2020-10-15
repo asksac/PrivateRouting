@@ -36,16 +36,21 @@ resource "aws_nat_gateway" "natgw" {
 resource "aws_route_table" "nat_route_tab" {
   vpc_id = aws_vpc.vpc2.id
   route {
-       cidr_block = "0.0.0.0/0"
-       nat_gateway_id = aws_nat_gateway.natgw.id
-   }
+    cidr_block = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.natgw.id
+  }
   route {
-       cidr_block = aws_vpc.vpc3.cidr_block
-       vpc_peering_connection_id = aws_vpc_peering_connection.vpc2_vpc3_peering.id
-   }   
+    cidr_block = aws_vpc.vpc3.cidr_block
+    vpc_peering_connection_id = aws_vpc_peering_connection.vpc2_vpc3_peering.id
+  }   
 }
 
 resource "aws_route_table_association" "nat_route_assoc_1" { 
   subnet_id = aws_subnet.vpc2_subnet_priv1.id
+  route_table_id = aws_route_table.nat_route_tab.id
+}
+
+resource "aws_route_table_association" "nat_route_assoc_2" { 
+  subnet_id = aws_subnet.vpc2_subnet_priv2.id
   route_table_id = aws_route_table.nat_route_tab.id
 }
