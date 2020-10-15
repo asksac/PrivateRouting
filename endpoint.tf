@@ -25,14 +25,21 @@ resource "aws_vpc_endpoint_service" "vpces_nlb" {
   network_load_balancer_arns  = [ module.proxy.nlb_arn ]
   tags                        = merge(local.common_tags, map("Name", "${var.app_shortcode}_nlb_endpointsvc"))
 
+  lifecycle {
+    create_before_destroy = true
+  }
+
   depends_on                  = [ module.proxy ]
 }
 
 resource "aws_vpc_endpoint" "vpce" {
+  service_name                = aws_vpc_endpoint_service.vpces_nlb.service_name
   vpc_id                      = aws_vpc.vpc1.id
   subnet_ids                  = [ aws_subnet.vpc1_subnet_priv1.id ]
-  service_name                = aws_vpc_endpoint_service.vpces_nlb.service_name
+
+  auto_accept                 = true
   vpc_endpoint_type           = "Interface"
+
   security_group_ids          = [aws_security_group.endpoint_sg.id]
   tags                        = merge(local.common_tags, map("Name", "${var.app_shortcode}_nlb_endpoint"))
 
