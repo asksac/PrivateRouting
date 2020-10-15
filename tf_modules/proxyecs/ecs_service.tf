@@ -53,7 +53,7 @@ resource "aws_ecs_service" "main" {
 
   network_configuration {
     security_groups     = [ aws_security_group.proxy_sg.id ]
-    subnets             = [ var.subnet_id ]
+    subnets             = var.subnet_ids
   }
 
   dynamic "load_balancer" {

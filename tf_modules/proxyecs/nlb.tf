@@ -3,9 +3,7 @@ resource "aws_lb" "nlb" {
   internal                = true
   load_balancer_type      = "network"
 
-  subnet_mapping {
-    subnet_id             = var.subnet_id
-  }
+  subnets                 = var.subnet_ids
 
   lifecycle {
     create_before_destroy = true

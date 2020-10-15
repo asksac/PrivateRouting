@@ -109,7 +109,7 @@ module "proxy" {
   app_name              = var.app_name
   app_shortcode         = var.app_shortcode
   vpc_id                = aws_vpc.vpc2.id
-  subnet_id             = aws_subnet.vpc2_subnet_priv1.id
+  subnet_ids             = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
   proxy_config          = local.proxy_config
   common_tags           = local.common_tags

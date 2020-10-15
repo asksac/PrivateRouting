@@ -12,7 +12,9 @@ variable "app_shortcode" {
 
 variable "vpc_id" {}
 
-variable "subnet_id" {}
+variable "subnet_ids" {
+  type = list
+}
 
 variable "source_cidr_blocks" {
   type = list
