@@ -3,7 +3,12 @@ data "template_file" "websvr_user_data_script" {
 #!/bin/bash -xe
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-sudo -b -u ec2-user python3 /home/ec2-user/PrivateRouting/src/webapp/server.py ${var.websvr_listen_port} &
+sudo mkdir /var/log/PrivateRouting
+sudo chown ec2-user:ec2-user /var/log/PrivateRouting
+
+PR_HOME=/home/ec2-user/PrivateRouting
+sudo -b -u ec2-user python3 $PR_HOME/src/webapp/server.py ${var.websvr_listen_http_port} &
+sudo -b -u ec2-user python3 $PR_HOME/src/webapp/server.py ${var.websvr_listen_https_port} --tls --keyfile $PR_HOME/config/ssl/key.pem --certfile $PR_HOME/config/ssl/cert.pem &
 EOF
 }
 
@@ -17,9 +22,15 @@ resource "aws_security_group" "websvr_sg" {
     protocol      = "tcp"
   }
   ingress {
-    cidr_blocks   = ["0.0.0.0/0"]
-    from_port     = var.websvr_listen_port
-    to_port       = var.websvr_listen_port
+    cidr_blocks   = [var.vpc2_cidr]
+    from_port     = var.websvr_listen_http_port
+    to_port       = var.websvr_listen_http_port
+    protocol      = "tcp"
+  }
+  ingress {
+    cidr_blocks   = [var.vpc2_cidr]
+    from_port     = var.websvr_listen_https_port
+    to_port       = var.websvr_listen_https_port
     protocol      = "tcp"
   }
   # Terraform removes the default rule
@@ -33,7 +44,7 @@ resource "aws_security_group" "websvr_sg" {
 
 resource "aws_instance" "websvr" {
   ami                     = data.aws_ami.ec2_ami.id
-  instance_type           = "t2.micro"
+  instance_type           = "c5.large"
   subnet_id               = aws_subnet.vpc3_subnet_pub1.id
   vpc_security_group_ids  = [aws_security_group.websvr_sg.id]
   key_name                = var.ec2_ssh_keypair_name
@@ -43,12 +54,4 @@ resource "aws_instance" "websvr" {
   depends_on              = [aws_internet_gateway.vpc3_igw]
 
   tags                    = merge(local.common_tags, map("Name", "${var.app_shortcode}_websvr"))
-}
-
-output "websvr_dns" {
-  value = aws_instance.websvr.public_dns
-}
-
-output "websvr_base_url" {
-  value = "http://${aws_instance.websvr.public_dns}:${var.websvr_listen_port}/"
 }

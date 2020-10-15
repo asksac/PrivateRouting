@@ -1,4 +1,3 @@
-/*
 # -----
 # Creates a public subnet and an IGW in VPC2
 
@@ -38,7 +37,7 @@ resource "aws_route_table" "nat_route_tab" {
   vpc_id = aws_vpc.vpc2.id
   route {
        cidr_block = "0.0.0.0/0"
-       gateway_id = aws_nat_gateway.natgw.id
+       nat_gateway_id = aws_nat_gateway.natgw.id
    }
   route {
        cidr_block = aws_vpc.vpc3.cidr_block
@@ -50,4 +49,3 @@ resource "aws_route_table_association" "nat_route_assoc_1" {
   subnet_id = aws_subnet.vpc2_subnet_priv1.id
   route_table_id = aws_route_table.nat_route_tab.id
 }
-*/

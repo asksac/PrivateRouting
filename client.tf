@@ -26,7 +26,3 @@ resource "aws_instance" "client_ec2" {
 
   tags                    = merge(local.common_tags, map("Name", "${var.app_shortcode}_client"))
 }
-
-output "client_dns" {
-  value = aws_instance.client_ec2.private_dns
-}
