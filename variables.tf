@@ -46,6 +46,16 @@ variable "vpc1_subnet_priv1_name" {
   default = "vpc1_priv1"
 }
 
+variable "vpc1_subnet_priv2_cidr" {
+  type    = string
+  default = "10.0.2.0/24"
+}
+
+variable "vpc1_subnet_priv2_name" {
+  type    = string
+  default = "vpc1_priv2"
+}
+
 ## VPC #2 ##
 
 # using an RFC 1918 reserved IP range
@@ -130,105 +140,3 @@ variable "websvr_listen_https_port" {
   default       = "8443"
   description   = "WebServer Listen HTTPS Port, e.g. 8443"
 }
-
-/*
-variable "proxy_config" {
-  type = object({
-    service_name      = string
-    port_mappings     = list(object({
-      name            = string
-      description     = string
-      backend_host    = string
-      backend_port    = number
-      nlb_port        = number
-      proxy_port      = number
-    }))
-  })
-
-  default = {
-    service_name = "myhaproxy"
-    port_mappings = [
-      {
-        name = "websvr-ssh"
-        description = "ssh connnection to websvr"
-        backend_host = "PLACEHOLDER.SERVER"
-        backend_port = 22
-        nlb_port = 9022
-        proxy_port = 9022
-      },
-      {
-        name = "websvr-http"
-        description = "http connnection to websvr"
-        backend_host = "PLACEHOLDER.SERVER"
-        backend_port = 8080
-        nlb_port = 9080
-        proxy_port = 9080
-      },
-      {
-        name = "websvr-https"
-        description = "https connnection to websvr"
-        backend_host = "PLACEHOLDER.SERVER"
-        backend_port = 8443
-        nlb_port = 9443
-        proxy_port = 9443
-      }
-    ]
-  }
-}
-*/
-
-/*
-variable "proxy_listen_http_port" {
-  type          = string
-  default       = "9080"
-  description   = "HAProxy Listen Port for HTTP, e.g. 8888"
-}
-
-variable "proxy_listen_https_port" {
-  type          = string
-  default       = "9443"
-  description   = "HAProxy Listen Port for HTTPS, e.g. 8443"
-}
-
-variable "proxy_listen_ssh_port" {
-  type          = string
-  default       = "9022"
-  description   = "HAProxy Listen Port for SSH, e.g. 2222"
-}
-
-variable "nlb_listen_http_port" {
-  type          = string
-  default       = "80"
-  description   = "NLB Listen Port for HTTP, e.g. 80"
-}
-
-variable "nlb_listen_https_port" {
-  type          = string
-  default       = "443"
-  description   = "NLB Listen Port for HTTPS, e.g. 443"
-}
-
-variable "nlb_listen_ssh_port" {
-  type          = string
-  default       = "22"
-  description   = "NLB Listen Port for SSH, e.g. 22"
-}
-
-variable "nlb_listen_ecs_http_port" {
-  type          = string
-  default       = "88"
-  description   = "NLB Listen Port for ECS HTTP, e.g. 88"
-}
-
-variable "nlb_listen_ecs_https_port" {
-  type          = string
-  default       = "88"
-  description   = "NLB Listen Port for ECS HTTP, e.g. 88"
-}
-
-variable "nlb_listen_ecs_ssh_port" {
-  type          = string
-  default       = "88"
-  description   = "NLB Listen Port for ECS HTTP, e.g. 88"
-}
-*/
