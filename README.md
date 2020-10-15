@@ -20,10 +20,10 @@ Refer to [this page](build/README.md) for instructions on building AMI and Docke
 
 ### Useful commands
 
-- Login to ECR: `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 229984062599.dkr.ecr.us-east-1.amazonaws.com`
-- Pull container image: `docker pull 229984062599.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
+- Login to ECR: `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin accountid.dkr.ecr.us-east-1.amazonaws.com`
+- Pull container image: `docker pull accountid.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
 - List docker images: `docker images`
-- Start a docker container: `docker run -d --rm --ulimit nofile=10000:10000 -p 88:8888 229984062599.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
+- Start a docker container: `docker run -d --rm --ulimit nofile=10000:10000 -p 88:8888 accountid.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
 - List running containers: `docker container ps`
 - SSH into a container: `docker exec -it <container_id> /bin/sh`
 
