@@ -7,7 +7,7 @@ locals {
   # Common tags to be assigned to all resources
   common_tags = {
     Project     = "PrivateRouting"
-    Application = "AWS-HSBC-Private-Routing"
+    Application = "AWS-OnPrem-Private-Routing"
     Environment = "dev"
   }
 
@@ -55,8 +55,9 @@ data "aws_ami" "ec2_ami" {
 
 /*
 #
-# Proxy running on EC2 instance (supports single instance only)
-#
+# Proxy running on EC2 instance (supports single instance only for now)
+# HAProxy on EC2 allows for better access and troubleshooting network
+# and other configuration issues 
 
 module "proxy" {
   source = "./tf_modules/proxysvr"
@@ -65,7 +66,7 @@ module "proxy" {
   app_name              = var.app_name
   app_shortcode         = var.app_shortcode
   vpc_id                = aws_vpc.vpc2.id
-  subnet_id             = aws_subnet.vpc2_subnet_priv1.id
+  subnet_ids            = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   ec2_ami_id            = data.aws_ami.ec2_ami.id
   source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
   ec2_ssh_keypair_name  = var.ec2_ssh_keypair_name
@@ -108,10 +109,14 @@ module "proxy" {
   aws_region            = var.aws_region
   app_name              = var.app_name
   app_shortcode         = var.app_shortcode
+
   vpc_id                = aws_vpc.vpc2.id
-  subnet_ids             = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
+  subnet_ids            = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
+
+  image_uri             = "${aws_ecr_repository.registry.repository_url}:1.0"
   proxy_config          = local.proxy_config
+
   common_tags           = local.common_tags
 }
 
@@ -133,4 +138,8 @@ output "D_websvr_private_dns" {
 
 output "D_websvr_public_dns" {
   value = aws_instance.websvr.public_dns
+}
+
+output "ecr_url" {
+  value = aws_ecr_repository.registry.repository_url
 }
