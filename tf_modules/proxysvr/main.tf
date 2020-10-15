@@ -8,7 +8,7 @@ locals {
 resource "aws_instance" "proxy" {
   ami                     = var.ec2_ami_id
   instance_type           = "c5.large"
-  subnet_id               = var.subnet_id
+  subnet_id               = var.subnet_ids[0]
   vpc_security_group_ids  = [aws_security_group.proxy_sg.id]
   key_name                = var.ec2_ssh_keypair_name
   user_data               = local.proxy_userdata

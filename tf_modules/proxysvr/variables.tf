@@ -12,7 +12,9 @@ variable "app_shortcode" {
 
 variable "vpc_id" {}
 
-variable "subnet_id" {}
+variable "subnet_ids" {
+   type = list 
+}
 
 variable "ec2_ami_id" {}
 
