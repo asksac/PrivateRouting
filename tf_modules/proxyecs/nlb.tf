@@ -38,8 +38,8 @@ resource "aws_lb_target_group" "nlb_tg_ecs" {
   vpc_id              = var.vpc_id
 
   health_check {
-    healthy_threshold = 2
-
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
   }
 
   lifecycle {
