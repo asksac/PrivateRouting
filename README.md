@@ -88,6 +88,20 @@ openssl req -x509 -nodes -newkey rsa:1024 -keyout config/ssl/key.pem -out config
 *As this is for testing purposes only, we are generating the private key file with no password (-nodes), 
 using a longer duration (-days 1825) and using dummy certificate details (-subj)*
 
+## Changelog
+
+Updates on 2020-10-15:
+- Separate terraform modules, one each for:
+  - HAProxy on ECS Fargate cluster
+  - HAProxy on EC2 (helpful for testing)
+- Support for multiple subnets 
+- Using PrivateLink (VPC endpoints) for ECR, S3 and CloudWatch Logs
+- Eliminated need for NATGW in HAProxy VPC
+
+Updates on 2020-10-14:
+- Support for an input map object to configure HAProxy rules
+- Refactor code into terraform modules 
+
 
 ## License
 
