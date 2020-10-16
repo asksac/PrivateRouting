@@ -37,4 +37,20 @@ variable "proxy_config" {
   })
 }
 
+variable "ecs_low_cpu_mark" {
+  default = "20"
+}
+
+variable "ecs_high_cpu_mark" {
+  default = "70"
+}
+
+variable "ecs_autoscale_min_instances" {
+  default = "2"
+}
+
+variable "ecs_autoscale_max_instances" {
+  default = "8"
+}
+
 variable "common_tags" {}

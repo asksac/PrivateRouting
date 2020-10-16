@@ -90,6 +90,9 @@ using a longer duration (-days 1825) and using dummy certificate details (-subj)
 
 ## Changelog
 
+Updates on 2020-10-16:
+- Added AutoScaling of ECS Fargate cluster
+
 Updates on 2020-10-15:
 - Separate terraform modules, one each for:
   - HAProxy on ECS Fargate cluster
@@ -100,7 +103,7 @@ Updates on 2020-10-15:
 
 Updates on 2020-10-14:
 - Support for an input map object to configure HAProxy rules
-- Refactor code into terraform modules 
+- Refactor haproxy code from root module to sub-modules 
 
 
 ## License

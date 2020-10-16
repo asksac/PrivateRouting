@@ -48,8 +48,15 @@ resource "aws_ecs_service" "main" {
   name                      = "${var.app_shortcode}-ecs-service"
   cluster                   = aws_ecs_cluster.main.id
   task_definition           = aws_ecs_task_definition.proxy_task.arn
-  desired_count             = "2"
+  desired_count             = var.ecs_autoscale_min_instances
   launch_type               = "FARGATE"
+
+  lifecycle {
+    ignore_changes          = [ desired_count ]
+  }
+
+  enable_ecs_managed_tags   = true
+  #propagate_tags            = "SERVICE"
 
   network_configuration {
     security_groups         = [ aws_security_group.proxy_sg.id ]
