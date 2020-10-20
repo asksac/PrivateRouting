@@ -106,7 +106,7 @@ resource "aws_vpc_peering_connection" "vpc2_vpc3_peering" {
   tags                                = merge(local.common_tags, map("Name", "${var.vpc2_name} to ${var.vpc3_name} peering"))
 }
 
-resource "aws_route" "vpc2_peering_route" {
+resource "aws_route" "vpc2_vpc3_peering_route" {
   route_table_id            = aws_vpc.vpc2.main_route_table_id
   destination_cidr_block    = aws_vpc.vpc3.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc2_vpc3_peering.id
@@ -137,14 +137,66 @@ resource "aws_vpc_peering_connection" "vpc1_vpc3_peering" {
   tags                                = merge(local.common_tags, map("Name", "${var.vpc1_name} to ${var.vpc3_name} peering"))
 }
 
-resource "aws_route" "vpc1_peering_route" {
+resource "aws_route" "vpc1_vpc3_peering_route" {
   route_table_id            = aws_vpc.vpc1.main_route_table_id
   destination_cidr_block    = aws_vpc.vpc3.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc3_peering.id
 }
 
-resource "aws_route" "vpc3_vpc_1_peering_route" {
+resource "aws_route" "vpc3_vpc1_peering_route" {
   route_table_id            = aws_vpc.vpc3.main_route_table_id
   destination_cidr_block    = aws_vpc.vpc1.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc3_peering.id
+}
+
+# ------------------- #
+## VPC 1 + 2 Peering ##
+
+resource "aws_vpc_peering_connection" "vpc1_vpc2_peering" {
+  vpc_id                              = aws_vpc.vpc1.id
+  peer_vpc_id                         = aws_vpc.vpc2.id
+  auto_accept                         = true
+
+  accepter {
+    allow_remote_vpc_dns_resolution   = true
+  }
+
+  requester {
+    allow_remote_vpc_dns_resolution   = true
+  }
+
+  tags                                = merge(local.common_tags, map("Name", "${var.vpc1_name} to ${var.vpc2_name} peering"))
+}
+
+resource "aws_route" "vpc1_vpc2_peering_route" {
+  route_table_id            = aws_vpc.vpc1.main_route_table_id
+  destination_cidr_block    = aws_vpc.vpc2.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc2_peering.id
+}
+
+resource "aws_route" "vpc2_vpc1_peering_route" {
+  route_table_id            = aws_vpc.vpc2.main_route_table_id
+  destination_cidr_block    = aws_vpc.vpc1.cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc2_peering.id
+}
+
+
+# ------------------- #
+## Route53 DNS Setup ##
+
+resource "aws_route53_zone" "dns_zone" {
+  name                      = "${var.app_shortcode}.internal"
+  comment                   = "Private DNS zone for mapping internal domain names for application ${var.app_name}"
+
+  vpc {
+    vpc_id                  = aws_vpc.vpc1.id
+  }
+
+  vpc {
+    vpc_id                  = aws_vpc.vpc2.id
+  }
+
+  vpc {
+      vpc_id                = aws_vpc.vpc3.id
+  }
 }

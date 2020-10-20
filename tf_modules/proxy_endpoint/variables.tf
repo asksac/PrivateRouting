@@ -1,0 +1,35 @@
+variable "app_shortcode" {
+  default                 = "prt"
+}
+
+variable "vpc" {
+  type                    = object({
+    id                    = string
+    cidr_block            = string 
+  })
+}
+
+variable "subnet_ids" {
+  type                    = list
+}
+
+variable "dns_zone_id" {}
+
+variable "endpoint_name" {}
+
+variable "endpoint_service_name" {}
+
+variable "proxy_config" {
+  type = object({
+    service_name          = string
+    port_mappings         = map(object({
+      description         = string
+      backend_host        = string
+      backend_port        = number
+      nlb_port            = number
+      proxy_port          = number
+    }))
+  })
+}
+
+variable "common_tags" {}
