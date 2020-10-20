@@ -16,23 +16,39 @@ locals {
     port_mappings = {
       websvr-ssh = {
         description = "ssh connnection to websvr"
-        backend_host = aws_instance.websvr.private_dns
+        backend_host = module.test_websvr.alias_dns
         backend_port = 22
-        nlb_port = 9022
-        proxy_port = 9022
+        nlb_port = 7022
+        proxy_port = 7022
       }
 
       websvr-http = {
         description = "http connnection to websvr"
-        backend_host = aws_instance.websvr.private_dns
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 80
+        nlb_port = 7080
+        proxy_port = 7080
+      }
+
+      websvr-https = {
+        description = "https connnection to websvr"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 443
+        nlb_port = 7443
+        proxy_port = 7443
+      }
+
+      nginx1-http = {
+        description = "http connnection to nginx"
+        backend_host = module.test_websvr.alias_dns
         backend_port = 8080
         nlb_port = 9080
         proxy_port = 9080
       }
 
-      websvr-https = {
-        description = "https connnection to websvr"
-        backend_host = aws_instance.websvr.private_dns
+      nginx1-https = {
+        description = "https connnection to nginx"
+        backend_host = module.test_websvr.alias_dns
         backend_port = 8443
         nlb_port = 9443
         proxy_port = 9443
@@ -53,93 +69,85 @@ data "aws_ami" "ec2_ami" {
 
 }
 
-/*
-#
-# Proxy running on EC2 instance (supports single instance only for now)
-# HAProxy on EC2 allows for better access and troubleshooting network
-# and other configuration issues 
-
-module "proxy" {
-  source = "./tf_modules/proxysvr"
+module "test_websvr" {
+  source = "./tf_modules/test_websvr"
 
   aws_region            = var.aws_region
-  app_name              = var.app_name
   app_shortcode         = var.app_shortcode
-  vpc_id                = aws_vpc.vpc2.id
-  subnet_ids            = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
+
   ec2_ami_id            = data.aws_ami.ec2_ami.id
-  source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
+  ec2_instance_type     = "c5.large"
   ec2_ssh_keypair_name  = var.ec2_ssh_keypair_name
-  proxy_config          = local.proxy_config
+
+  vpc_id                = aws_vpc.vpc3.id
+  subnet_id             = aws_subnet.vpc3_subnet_pub1.id
+  dns_zone_id           = aws_route53_zone.dns_zone.zone_id
+  vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
+  source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr ]
+  ssh_source_cidr_blocks  = ["0.0.0.0/0"]
+
+  websvr_listen_ports   = {
+    server_http_ports     = [ 80 ]
+    server_https_ports    = [ 443 ]
+    server_ssh_ports      = [ 22 ]
+    nginx_http_ports      = [ 8080, 8081 ]
+    nginx_https_ports     = [ 8443, 8444 ]
+  }
+
   common_tags           = local.common_tags
 }
 
-output "A_client_dns" {
-  value = aws_instance.client_ec2.private_dns
+output "webserver_config" {
+  value = {
+    "private_dns"         = module.test_websvr.private_dns
+    "public_dns"          = module.test_websvr.public_dns
+    "alias_dns"           = module.test_websvr.alias_dns
+  }
 }
 
-output "B_vpc_endpoint_dns" {
-  value   = aws_vpc_endpoint.vpce.dns_entry 
+/*
+output "B_websvr_internal_dns" {
+  value = module.test_websvr.internal_dns
 }
 
-output "C_nlb_dns" {
-  value = module.proxy.nlb_dns
+output "B_websvr_private_dns" {
+  value = module.test_websvr.private_dns
 }
 
-output "D_proxy_dns" {
-  value = module.proxy.proxysvr_dns
-}
-
-output "E_websvr_private_dns" {
-  value = aws_instance.websvr.private_dns
-}
-
-output "E_websvr_public_dns" {
-  value = aws_instance.websvr.public_dns
+output "B_websvr_public_dns" {
+  value = module.test_websvr.public_dns
 }
 */
 
-#
-# Proxy running on ECS Fargate cluster
-#
-
-module "proxy" {
-  source = "./tf_modules/proxyecs"
+module "test_client" {
+  source = "./tf_modules/test_client"
 
   aws_region            = var.aws_region
-  app_name              = var.app_name
   app_shortcode         = var.app_shortcode
 
-  vpc_id                = aws_vpc.vpc2.id
-  subnet_ids            = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
-  source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
+  ec2_ami_id            = data.aws_ami.ec2_ami.id
+  ec2_instance_type     = "m5.large"
+  ec2_ssh_keypair_name  = var.ec2_ssh_keypair_name
 
-  image_uri             = "${aws_ecr_repository.registry.repository_url}:1.0"
-  proxy_config          = local.proxy_config
+  vpc_id                = aws_vpc.vpc1.id
+  subnet_id             = aws_subnet.vpc1_subnet_priv1.id
+  dns_zone_id           = aws_route53_zone.dns_zone.zone_id  
+  vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
+  source_cidr_blocks    = [ var.vpc2_cidr, var.vpc3_cidr ]
 
   common_tags           = local.common_tags
 }
 
+output "client_config" {
+  value = {
+    "private_dns"         = module.test_client.private_dns
+    "public_dns"          = module.test_client.public_dns
+    "alias_dns"           = module.test_client.alias_dns
+  }
+}
+
+/*
 output "A_client_dns" {
-  value = aws_instance.client_ec2.private_dns
+  value = module.test_client.private_dns 
 }
-
-output "B_vpc_endpoint_dns" {
-  value   = aws_vpc_endpoint.vpce.dns_entry 
-}
-
-output "C_nlb_dns" {
-  value = module.proxy.nlb_dns
-}
-
-output "D_websvr_private_dns" {
-  value = aws_instance.websvr.private_dns
-}
-
-output "D_websvr_public_dns" {
-  value = aws_instance.websvr.public_dns
-}
-
-output "ecr_url" {
-  value = aws_ecr_repository.registry.repository_url
-}
+*/
