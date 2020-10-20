@@ -55,8 +55,8 @@ resource "aws_iam_role_policy_attachment" "proxy_exec_role_policy" {
 }
 
 resource "aws_security_group" "proxy_sg" {
-  name            = "proxy_sg"
-  vpc_id          = var.vpc_id
+  name_prefix       = "${var.app_shortcode}_proxyecs_sg"
+  vpc_id            = var.vpc_id
 
   dynamic "ingress" {
     for_each        = var.proxy_config.port_mappings

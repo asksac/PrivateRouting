@@ -38,8 +38,15 @@ resource "aws_lb_target_group" "nlb_tg_ecs" {
   vpc_id              = var.vpc_id
 
   health_check {
+    enabled             = true
     healthy_threshold   = 2
     unhealthy_threshold = 2
+    interval            = 30
+    #matcher             = "" # cannot be changed for nlb
+    #path                = "" # cannot be changed for nlb
+    #timeout             = 10 # cannot be changed for nlb
+    port                = "traffic-port"
+    protocol            = "TCP"
   }
 
   lifecycle {

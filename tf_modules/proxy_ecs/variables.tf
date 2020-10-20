@@ -16,6 +16,8 @@ variable "subnet_ids" {
   type = list
 }
 
+variable "dns_zone_id" {}
+
 variable "source_cidr_blocks" {
   type = list
 }

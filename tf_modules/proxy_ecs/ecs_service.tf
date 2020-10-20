@@ -55,7 +55,7 @@ resource "aws_ecs_service" "main" {
     ignore_changes          = [ desired_count ]
   }
 
-  enable_ecs_managed_tags   = true
+  #enable_ecs_managed_tags   = true
   #propagate_tags            = "SERVICE"
 
   network_configuration {
@@ -73,5 +73,5 @@ resource "aws_ecs_service" "main" {
     }
   }
 
-  depends_on                = [ aws_lb_listener.nlb_listener_ecs ]
+  depends_on                = [ aws_lb_listener.nlb_listener_ecs, aws_security_group.proxy_sg ]
 }
