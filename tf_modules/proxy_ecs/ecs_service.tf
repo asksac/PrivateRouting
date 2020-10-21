@@ -20,8 +20,8 @@ resource "aws_ecs_task_definition" "proxy_task" {
     "portMappings": ${local.port_mappings_task_def_json}, 
     "ulimits": [
       {
-        "softLimit": 16384,
-        "hardLimit": 16384,
+        "softLimit": 65535,
+        "hardLimit": 65535,
         "name": "nofile"
       }
     ], 
@@ -67,11 +67,11 @@ resource "aws_ecs_service" "main" {
     for_each                = var.proxy_config.port_mappings
 
     content {
-      target_group_arn      = aws_lb_target_group.nlb_tg_ecs[load_balancer.key].id
+      target_group_arn      = aws_lb_target_group.nlb_tgs[load_balancer.key].id
       container_name        = var.proxy_config.service_name
       container_port        = load_balancer.value.proxy_port
     }
   }
 
-  depends_on                = [ aws_lb_listener.nlb_listener_ecs, aws_security_group.proxy_sg ]
+  depends_on                = [ aws_lb_listener.nlb_listeners, aws_security_group.proxy_sg ]
 }
