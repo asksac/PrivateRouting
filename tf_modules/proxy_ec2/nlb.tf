@@ -1,9 +1,10 @@
 resource "aws_lb" "nlb" {
-  name                    = "${var.app_shortcode}-proxy-nlb-${substr(uuid(),0, 3)}"
+  name                    = "${var.app_shortcode}-proxysvr-nlb-${substr(uuid(),0, 3)}"
   internal                = true
   load_balancer_type      = "network"
 
   subnets                 = var.subnet_ids
+  enable_cross_zone_load_balancing  = true
   
   lifecycle {
     create_before_destroy = true
@@ -29,7 +30,7 @@ resource "aws_lb_listener" "nlb_listeners" {
 resource "aws_lb_target_group" "nlb_tgs" {
   for_each                = var.proxy_config.port_mappings
 
-  name                    = "${var.app_shortcode}-proxysvr-nlb-tg-${substr(uuid(),0, 3)}"
+  name                    = "${var.app_shortcode}-proxysvr-nlb-tg-${each.key}"
   port                    = each.value.proxy_port # outbound port of NLB / inbound of targets
   protocol                = "TCP"
   target_type             = "instance"
