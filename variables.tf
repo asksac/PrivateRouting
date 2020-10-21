@@ -126,17 +126,3 @@ variable "vpc3_subnet_pub1_name" {
   type    = string
   default = "vpc3_pub1"
 }
-
-## Ports and Proxy Config
-
-variable "websvr_listen_http_port" {
-  type          = string
-  default       = "8080"
-  description   = "WebServer Listen HTTP Port, e.g. 8080"
-}
-
-variable "websvr_listen_https_port" {
-  type          = string
-  default       = "8443"
-  description   = "WebServer Listen HTTPS Port, e.g. 8443"
-}
