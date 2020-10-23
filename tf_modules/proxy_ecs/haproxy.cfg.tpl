@@ -1,6 +1,6 @@
 global
   log stdout format short local0 warning
-  maxconn 4096
+  maxconn 8192
   user haproxy
   group haproxy
 
@@ -15,7 +15,7 @@ defaults
   timeout server 30000
 
 %{ for name, pm in port_mappings }
-listen ${name}_fe: 
+listen ${name}: 
   bind *:${pm.proxy_port}
-  server ${name}_be ${pm.backend_host}:${pm.backend_port} check
+  server ${name}-svr ${pm.backend_host}:${pm.backend_port} check
 %{ endfor }

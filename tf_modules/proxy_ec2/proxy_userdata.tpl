@@ -27,10 +27,9 @@ mv /etc/haproxy2/haproxy2.cfg /etc/haproxy2/haproxy2.cfg.original
 tee /etc/haproxy2/haproxy2.cfg <<EOF
 global
   log 127.0.0.1:514 local0 info
-  maxconn 50000
-  maxpipes 25000
-  ulimit-n 200000
-  nbproc 2
+  maxconn 8192
+  maxpipes 16384
+  ulimit-n 1000000
   user haproxy
   group haproxy
   daemon
@@ -47,9 +46,9 @@ defaults
   timeout server 30000
 
 %{ for name, pm in port_mappings }
-listen ${name}-fe: 
+listen ${name}: 
   bind *:${pm.proxy_port}
-  server ${name}-be ${pm.backend_host}:${pm.backend_port} check
+  server ${name}-svr ${pm.backend_host}:${pm.backend_port} check
 %{ endfor }
 
 EOF
