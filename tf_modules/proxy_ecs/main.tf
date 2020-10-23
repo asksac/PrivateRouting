@@ -6,7 +6,8 @@ locals {
   port_mappings_task_def_json = jsonencode([
     for pm in var.proxy_config.port_mappings: { 
       containerPort = pm.proxy_port, 
-      hostPort = pm.proxy_port
+      hostPort = pm.proxy_port,
+      protocol = "tcp"
     }
   ])
 }
