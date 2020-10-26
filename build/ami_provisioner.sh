@@ -9,15 +9,16 @@ sudo yum -y install awscli
 
 # update kernel level file descriptor limit and tcp tuning parameters
 sudo sed -i.original '$a\
-fs.file-max = 500000 \
-net.ipv4.ip_local_port_range = 2000 65000 \
+fs.file-max = 1000000 \
+net.ipv4.ip_local_port_range = 1024 65535 \
 net.ipv4.tcp_tw_reuse = 1 \
 net.ipv4.tcp_fin_timeout = 15 \
-net.core.somaxconn = 4096' /etc/sysctl.conf
+net.core.somaxconn = 4096 \
+net.ipv4.tcp_max_tw_buckets = 1440000' /etc/sysctl.conf
 
 # update ulimit/per process file descriptor limit
 sudo sed -i.original '/# End of file/i\
-* soft nofile 500000 \
-* hard nofile 500000 \
-root soft nofile 500000 \
-root hard nofile 500000' /etc/security/limits.conf
+* soft nofile 1000000 \
+* hard nofile 1000000 \
+root soft nofile 1000000 \
+root hard nofile 1000000' /etc/security/limits.conf
