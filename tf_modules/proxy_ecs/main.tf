@@ -18,10 +18,12 @@ resource "aws_cloudwatch_log_group" "ecs_proxy_log_group" {
 }
 
 resource "aws_ssm_parameter" "haproxy_config" {
-  description           = "Contents of haproxy.cfg file"
-  type                  = "String"
   name                  = "/${var.app_name}/HAPROXY_CONFIG"
+  type                  = "String"
+  description           = "Contents of haproxy.cfg file"
   value                 = local.haproxy_config
+  # standard tier supports upto 4kb and advanced tier supports upto 8kb
+  tier                  = length(local.haproxy_config) > 4096 ? "Advanced" : "Standard" 
   overwrite             = true
-  tags                  = merge(var.common_tags, map("CFG_HASH", md5(local.haproxy_config)))
+  tags                  = var.common_tags
 }
