@@ -77,3 +77,43 @@ EOF
 systemctl restart nginx
 systemctl status nginx
 
+yum install -y httpd
+
+mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.original
+tee /etc/httpd/conf/httpd.conf <<EOF
+ServerRoot "/etc/httpd"
+Listen 8080
+Include conf.modules.d/*.conf
+
+User apache
+Group apache
+ServerAdmin root@localhost
+
+<Directory />
+    AllowOverride none
+    Require all denied
+</Directory>
+
+DocumentRoot "/var/www/html"
+
+<Directory "/var/www/html">
+    Options Indexes FollowSymLinks
+    AllowOverride None
+    Require all granted
+</Directory>
+
+<IfModule dir_module>
+    DirectoryIndex index.html
+</IfModule>
+
+<Files ".ht*">
+    Require all denied
+</Files>
+
+ErrorLog "logs/error_log"
+LogLevel warn
+
+<IfModule mod_http2.c>
+    Protocols h2 h2c http/1.1
+</IfModule>
+EOF
