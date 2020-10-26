@@ -26,7 +26,7 @@ systemctl status rsyslog
 mv /etc/haproxy2/haproxy2.cfg /etc/haproxy2/haproxy2.cfg.original
 tee /etc/haproxy2/haproxy2.cfg <<EOF
 global
-  log 127.0.0.1:514 local0 info
+  log 127.0.0.1:514 local0 warning
   maxconn 8192
   maxpipes 16384
   ulimit-n 1000000
