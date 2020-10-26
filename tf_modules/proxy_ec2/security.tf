@@ -9,15 +9,17 @@ resource "aws_security_group" "proxy_sg" {
     protocol              = "tcp"
   }
 
+  /*
   dynamic "ingress" {
     for_each              = var.proxy_config.port_mappings
     content {
       cidr_blocks         = var.source_cidr_blocks
-      from_port           = ingress.value.nlb_port
-      to_port             = ingress.value.nlb_port
+      from_port           = ingress.value.proxy_port
+      to_port             = ingress.value.proxy_port
       protocol            = "tcp"
     }
   }
+  */
 
   egress {
     from_port             = 0
@@ -26,6 +28,18 @@ resource "aws_security_group" "proxy_sg" {
     cidr_blocks           = ["0.0.0.0/0"]
   }
   tags                    = var.common_tags
+}
+
+resource "aws_security_group_rule" "proxy_sg_rule" {
+  for_each                = var.proxy_config.port_mappings
+
+  type                    = "ingress"
+  security_group_id       = aws_security_group.proxy_sg.id
+
+  cidr_blocks             = var.source_cidr_blocks
+  from_port               = each.value.proxy_port
+  to_port                 = each.value.proxy_port
+  protocol                = "tcp"
 }
 
 resource "aws_iam_role" "proxy_exec_role" {
