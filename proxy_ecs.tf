@@ -45,13 +45,3 @@ output "proxy_ecs" {
     "endpoint_alias_dns"  = module.proxy_ecs_endpoint.alias_dns
   }
 }
-
-/*
-output "PECS_vpc_endpoint_dns" {
-  value                   = module.proxy_ecs_endpoint.endpoint_dns 
-}
-
-output "PECS_nlb_dns" {
-  value                   = module.proxy.nlb_dns
-}
-*/
