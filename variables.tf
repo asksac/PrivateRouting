@@ -109,7 +109,7 @@ variable "vpc2_subnet_nlb_priv_ip" {
 # using a public IP space for VPC
 variable "vpc3_cidr" {
   type    = string
-  default = "200.10.0.0/16"
+  default = "192.168.0.0/16" # "200.10.0.0/16"
 }
 
 variable "vpc3_name" {
@@ -119,10 +119,20 @@ variable "vpc3_name" {
 
 variable "vpc3_subnet_pub1_cidr" {
   type    = string
-  default = "200.10.1.0/24"
+  default = "192.168.1.0/24" # "200.10.1.0/24"
 }
 
 variable "vpc3_subnet_pub1_name" {
   type    = string
   default = "vpc3_pub1"
+}
+
+## Test WebServer Setup ##
+
+variable "addon_nlb_port" {
+  default = 10080
+}
+
+variable "addon_websvr_port" {
+  default = 8080
 }
