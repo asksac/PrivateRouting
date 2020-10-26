@@ -2,17 +2,7 @@ resource "aws_security_group" "proxy_sg" {
   name_prefix             = "${var.app_shortcode}-proxyecs-sg"
   vpc_id                  = var.vpc_id
 
-  dynamic "ingress" {
-    for_each              = var.proxy_config.port_mappings
-
-    content {
-      cidr_blocks         = var.source_cidr_blocks
-      from_port           = ingress.value.nlb_port
-      to_port             = ingress.value.nlb_port
-      protocol            = "tcp"
-    }
-  }
-
+  /*
   dynamic "ingress" {
     for_each              = var.proxy_config.port_mappings
     content {
@@ -22,6 +12,7 @@ resource "aws_security_group" "proxy_sg" {
       protocol            = "tcp"
     }
   }
+  */
 
   egress {
     from_port             = 0
@@ -30,6 +21,18 @@ resource "aws_security_group" "proxy_sg" {
     cidr_blocks           = ["0.0.0.0/0"]
   }
   tags                    = var.common_tags
+}
+
+resource "aws_security_group_rule" "proxy_sg_rule" {
+  for_each                = var.proxy_config.port_mappings
+
+  type                    = "ingress"
+  security_group_id       = aws_security_group.proxy_sg.id
+
+  cidr_blocks             = var.source_cidr_blocks
+  from_port               = each.value.proxy_port
+  to_port                 = each.value.proxy_port
+  protocol                = "tcp"
 }
 
 resource "aws_iam_role" "proxy_exec_role" {
@@ -74,7 +77,8 @@ resource "aws_iam_policy" "proxy_exec_role_permissions" {
         "ecr:BatchGetImage",
         "logs:CreateLogStream",
         "logs:PutLogEvents", 
-        "ssm:GetParameters"
+        "ssm:GetParameters", 
+        "ecs:StartTelemetrySession"
       ],
       "Resource": "*"
     }
