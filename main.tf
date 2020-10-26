@@ -97,28 +97,6 @@ module "test_websvr" {
   common_tags           = local.common_tags
 }
 
-output "webserver_config" {
-  value = {
-    "private_dns"         = module.test_websvr.private_dns
-    "public_dns"          = module.test_websvr.public_dns
-    "alias_dns"           = module.test_websvr.alias_dns
-  }
-}
-
-/*
-output "B_websvr_internal_dns" {
-  value = module.test_websvr.internal_dns
-}
-
-output "B_websvr_private_dns" {
-  value = module.test_websvr.private_dns
-}
-
-output "B_websvr_public_dns" {
-  value = module.test_websvr.public_dns
-}
-*/
-
 module "test_client" {
   source = "./tf_modules/test_client"
 
@@ -138,6 +116,18 @@ module "test_client" {
   common_tags           = local.common_tags
 }
 
+#
+# Output
+#
+
+output "webserver_config" {
+  value = {
+    "private_dns"         = module.test_websvr.private_dns
+    "public_dns"          = module.test_websvr.public_dns
+    "alias_dns"           = module.test_websvr.alias_dns
+  }
+}
+
 output "client_config" {
   value = {
     "private_dns"         = module.test_client.private_dns
@@ -145,9 +135,3 @@ output "client_config" {
     "alias_dns"           = module.test_client.alias_dns
   }
 }
-
-/*
-output "A_client_dns" {
-  value = module.test_client.private_dns 
-}
-*/
