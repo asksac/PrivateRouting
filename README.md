@@ -2,11 +2,18 @@
 
 ## Overview
 
-This project offers an example of how network connections can be securely
-routed from an AWS VPC to an external network that uses public IP address
-space via a Virtual Private Gateway or VPC peering. 
+This repo offers an example of how network connections can be securely
+routed from an AWS VPC to any external network that uses public IP addresses, 
+using a cluster of HAProxy deployed on AWS Fargate. There is also an option
+to deploy HAProxy on an EC2 cluster managed by AWS Auto Scaling. 
+
+HAProxy is used here as a lightweight and highly performant L4 TCP proxy that 
+supports DNS resolution of backend hosts. 
 
 ## Diagram
+
+The diagram below shows how networking and infrastructure is setup in this
+project: 
 
 ![AWS VPC network diagram](docs/images/aws_vpc_diagram.png)
 
@@ -14,16 +21,29 @@ space via a Virtual Private Gateway or VPC peering.
 
 ### 1. Build the AMI and ECS Container Image
 
-Refer to [this page](build/README.md) for instructions on building AMI and Docker container image. 
+Refer to [this page](build/README.md) for instructions on building AMI and 
+Docker container image. 
+
+## Limitations 
+
+The current design has a few limitations to be aware of. 
+
+#### HAProxy on Amazon ECS on AWS Fargate
+- A maximum of 5 proxy config rules can be defined in a single cluster
+- Updating proxy config causes entire ECS Service to be destroyed and recreated, 
+resulting in some downtime
+- HAProxy configuration must be less than 8kb in size (that should never be an issue
+as a maximum of 5 rules are supported at the moment)
+
 
 ## Troubleshooting
 
 ### Useful commands
 
-- Login to ECR: `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin accountid.dkr.ecr.us-east-1.amazonaws.com`
-- Pull container image: `docker pull accountid.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
+- Login to ECR: `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <accountid>.dkr.ecr.us-east-1.amazonaws.com`
+- Pull container image: `docker pull <accountid>.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
 - List docker images: `docker images`
-- Start a docker container: `docker run -d --rm --ulimit nofile=10000:10000 -p 88:8888 accountid.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
+- Start a docker container: `docker run -d --rm --ulimit nofile=10000:10000 -p 88:8888 <accountid>.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
 - List running containers: `docker container ps`
 - SSH into a container: `docker exec -it <container_id> /bin/sh`
 
