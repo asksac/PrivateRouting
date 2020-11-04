@@ -41,11 +41,13 @@ resource "aws_lb_target_group" "nlb_tgs" {
     ignore_changes        = [name]
   }
 
+  deregistration_delay    = 180 # default is 300s
+
   health_check {
     enabled               = true
-    healthy_threshold     = 2
-    unhealthy_threshold   = 2
-    interval              = 30
+    healthy_threshold     = 2 # default is 3
+    unhealthy_threshold   = 2 # default is 3
+    interval              = 10 # default is 30
     #matcher               = "" # cannot be changed for nlb
     #path                  = "" # cannot be changed for nlb
     #timeout               = 10 # cannot be changed for nlb
