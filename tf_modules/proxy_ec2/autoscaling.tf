@@ -1,6 +1,10 @@
 locals {
   proxy_userdata          = templatefile("${path.module}/proxy_userdata.tpl", {
+    aws_region            = var.aws_region
     port_mappings         = var.proxy_config.port_mappings
+    ecr_docker_dns        = "${var.ecr_registry_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
+    ecr_image_uri         = var.ecr_image_uri
+    log_group_name        = aws_cloudwatch_log_group.ec2_proxy_log_group.name
   })
 }
 
