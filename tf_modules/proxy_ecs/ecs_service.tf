@@ -14,7 +14,7 @@ resource "aws_ecs_task_definition" "proxy_task" {
   container_definitions     = <<DEFINITION
 [
   {
-    "image": "${var.image_uri}",
+    "image": "${var.ecr_image_uri}",
     "name": "${var.proxy_config.service_name}",
     "networkMode": "awsvpc",
     "portMappings": ${local.port_mappings_task_def_json}, 
@@ -40,12 +40,27 @@ resource "aws_ecs_task_definition" "proxy_task" {
   }
 ]
 DEFINITION
+
   depends_on                = [ aws_ssm_parameter.haproxy_config ] 
   tags                      = var.common_tags
 }
 
+locals {
+  pm        = var.proxy_config.port_mappings
+  pm_len    = length(local.pm)
+  pm_gcount = ceil(local.pm_len / 5)
+  pm_groups = [ for i in range(local.pm_gcount): 
+                    zipmap(
+                      slice(keys(local.pm), i*5, (i+1)*5 > local.pm_len ? local.pm_len : (i+1)*5), 
+                      slice(values(local.pm), i*5, (i+1)*5 > local.pm_len ? local.pm_len : (i+1)*5)
+                    ) 
+                ]
+}
+
 resource "aws_ecs_service" "main" {
-  name                      = "${var.app_shortcode}-ecs-service"
+  count                     = local.pm_gcount
+
+  name                      = "${var.app_shortcode}-ecs-service-${count.index}"
   cluster                   = aws_ecs_cluster.main.id
   task_definition           = aws_ecs_task_definition.proxy_task.arn
   desired_count             = var.ecs_autoscale_min_instances
@@ -55,8 +70,9 @@ resource "aws_ecs_service" "main" {
     ignore_changes          = [ desired_count ]
   }
 
-  #enable_ecs_managed_tags   = true
-  #propagate_tags            = "SERVICE"
+  deployment_maximum_percent          = 200
+  deployment_minimum_healthy_percent  = 50
+  health_check_grace_period_seconds   = 15
 
   network_configuration {
     security_groups         = [ aws_security_group.proxy_sg.id ]
@@ -64,7 +80,7 @@ resource "aws_ecs_service" "main" {
   }
 
   dynamic "load_balancer" {
-    for_each                = var.proxy_config.port_mappings
+    for_each                = local.pm_groups[count.index] # var.proxy_config.port_mappings
 
     content {
       target_group_arn      = aws_lb_target_group.nlb_tgs[load_balancer.key].id
