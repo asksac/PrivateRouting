@@ -11,8 +11,69 @@ locals {
     Environment = "dev"
   }
 
-  proxy_config = {
+  ecs_proxy_config = {
     service_name = "myproxy"
+    port_mappings = {
+      websvr-ssh = {
+        description = "ssh connnection to websvr"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 22
+        nlb_port = 7022
+        proxy_port = 7022
+      }
+
+      websvr-http = {
+        description = "http connnection to websvr"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 80
+        nlb_port = 7080
+        proxy_port = 7080
+      }
+
+      websvr-https = {
+        description = "https connnection to websvr"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 443
+        nlb_port = 7443
+        proxy_port = 7443
+      }
+
+      nginx1-http = {
+        description = "http connnection to nginx"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 8080
+        nlb_port = 9080
+        proxy_port = 9080
+      }
+
+      nginx1-https = {
+        description = "https connnection to nginx"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 8443
+        nlb_port = 9443
+        proxy_port = 9443
+      }
+
+      xxngin-http = {
+        description = "2nd http connnection to nginx"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 8081
+        nlb_port = 9081
+        proxy_port = 9081
+      }
+
+      xxngin-https = {
+        description = "https connnection to nginx"
+        backend_host = module.test_websvr.alias_dns
+        backend_port = 8444
+        nlb_port = 9444
+        proxy_port = 9444
+      }
+    }
+  }
+
+  ec2_proxy_config = {
+    service_name = "myec2proxy"
     port_mappings = {
       websvr-ssh = {
         description = "ssh connnection to websvr"
@@ -87,11 +148,11 @@ module "test_websvr" {
   ssh_source_cidr_blocks  = ["0.0.0.0/0"]
 
   websvr_listen_ports   = {
-    server_http_ports     = [ 80 ]
-    server_https_ports    = [ 443 ]
-    server_ssh_ports      = [ 22 ]
-    nginx_http_ports      = [ 8080, 8081 ]
-    nginx_https_ports     = [ 8443, 8444 ]
+    server_http_ports   = [ 80 ]
+    server_https_ports  = [ 443 ]
+    server_ssh_ports    = [ 22 ]
+    nginx_http_ports    = [ 8080, 8081 ]
+    nginx_https_ports   = [ 8443, 8444 ]
   }
 
   common_tags           = local.common_tags
