@@ -50,10 +50,16 @@ services:
     deploy:
       replicas: 1
     logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "false"
+    logging:
       driver: awslogs
       options:
-        awslogs-region: ${aws_region}
-        awslogs-group: ${log_group_name}
+        awslogs-region: "${aws_region}"
+        awslogs-group: "${log_group_name}"
         awslogs-create-group: "false"
 EOF
 
