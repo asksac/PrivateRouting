@@ -1,38 +1,12 @@
 #!/bin/bash -xe
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-# this is an ec2 user data script that creates an haproxy.cfg file
-# and restarts haproxy2 service (haproxy2 package must be installed)
-
-# install haproxy v2.1.4 from amazon extras repo
-amazon-linux-extras enable haproxy2
-yum -y install haproxy2 
-haproxy2 -v
-
-yum install -y rsyslog
-tee /etc/rsyslog.d/haproxy.conf <<EOF
-# Collect log with UDP
-\$ModLoad imudp
-\$UDPServerAddress 127.0.0.1
-\$UDPServerRun 514
-
-# Creating separate log files based on the severity
-local0.* /var/log/haproxy-traffic.log
-local0.notice /var/log/haproxy-admin.log
-EOF
-systemctl restart rsyslog
-systemctl status rsyslog
-
-mv /etc/haproxy2/haproxy2.cfg /etc/haproxy2/haproxy2.cfg.original
-tee /etc/haproxy2/haproxy2.cfg <<EOF
+tee /root/haproxy.cfg <<EOF
 global
-  log 127.0.0.1:514 local0 warning
+  log stdout format raw local0 warning
   maxconn 8192
-  maxpipes 16384
-  ulimit-n 1000000
   user haproxy
   group haproxy
-  daemon
   master-worker
 
 defaults
@@ -40,17 +14,49 @@ defaults
   mode tcp
   option tcplog
   option dontlognull
+  option dontlog-normal
   timeout connect 5000
   timeout check 5000
   timeout client 30000
   timeout server 30000
 
-%{ for name, pm in port_mappings }
-listen ${name}: 
-  bind *:${pm.proxy_port}
-  server ${name}-svr ${pm.backend_host}:${pm.backend_port} check
-%{ endfor }
+resolvers default
+  parse-resolv-conf
+  #nameserver dns1 172.16.0.2:53
 
+%{ for name, pm in port_mappings }
+listen ${name} 
+  bind *:${pm.proxy_port}
+  server ${name}-svr ${pm.backend_host}:${pm.backend_port} check resolvers default resolve-prefer ipv4
+%{ endfor }
 EOF
-systemctl restart haproxy2
-systemctl status haproxy2
+
+tee /root/docker-compose.yaml <<EOF
+version: "3.8"
+services:
+  myhaproxy:
+    image: ${ecr_image_uri}
+    ports:
+%{ for name, pm in port_mappings }
+      - "${pm.proxy_port}:${pm.proxy_port}"
+%{ endfor }
+    command: ["haproxy", "-db", "-d", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
+    volumes: 
+      - "/root/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    deploy:
+      replicas: 1
+    logging:
+      driver: awslogs
+      options:
+        awslogs-region: ${aws_region}
+        awslogs-group: ${log_group_name}
+        awslogs-create-group: "false"
+EOF
+
+aws configure set region ${aws_region}
+aws ecr get-login-password | docker login --username AWS --password-stdin ${ecr_docker_dns}
+docker-compose -f /root/docker-compose.yaml up --detach
