@@ -19,7 +19,9 @@ module "proxy_ec2" {
   ec2_ami_id              = data.aws_ami.ec2_ami.id
   ec2_ssh_keypair_name    = var.ec2_ssh_keypair_name
 
-  proxy_config            = local.proxy_config
+  ecr_registry_id         = aws_ecr_repository.registry.registry_id
+  ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"
+  proxy_config            = local.ec2_proxy_config
 
   common_tags             = local.common_tags
 }
@@ -35,7 +37,7 @@ module "proxy_ec2_endpoint" {
   subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id ] 
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
 
-  proxy_config            = local.proxy_config
+  proxy_config            = local.ec2_proxy_config
   endpoint_service_name   = module.proxy_ec2.endpoint_service_name
 
   common_tags             = local.common_tags
