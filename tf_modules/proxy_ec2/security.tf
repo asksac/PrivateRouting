@@ -2,13 +2,6 @@ resource "aws_security_group" "proxy_sg" {
   name_prefix             = "${var.app_shortcode}-proxysvr-sg" # sg name can be 255 char long
   vpc_id                  = var.vpc_id
 
-  ingress {
-    cidr_blocks           = var.source_cidr_blocks
-    from_port             = 22
-    to_port               = 22
-    protocol              = "tcp"
-  }
-
   /*
   dynamic "ingress" {
     for_each              = var.proxy_config.port_mappings
@@ -28,6 +21,16 @@ resource "aws_security_group" "proxy_sg" {
     cidr_blocks           = ["0.0.0.0/0"]
   }
   tags                    = var.common_tags
+}
+
+resource "aws_security_group_rule" "proxy_sg_ssh_rule" {
+  type                    = "ingress"
+  security_group_id       = aws_security_group.proxy_sg.id
+
+  cidr_blocks             = var.source_cidr_blocks
+  from_port               = 22
+  to_port                 = 22
+  protocol                = "tcp"
 }
 
 resource "aws_security_group_rule" "proxy_sg_rule" {
