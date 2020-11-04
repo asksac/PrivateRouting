@@ -31,3 +31,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_low" {
 
   alarm_actions           = [ aws_autoscaling_policy.proxysvr_asg_decr_policy.arn ]
 }
+
+resource "aws_cloudwatch_log_group" "ec2_proxy_log_group" {
+  name                  = "${var.app_name}/${var.proxy_config.service_name}"
+  tags                  = var.common_tags
+}
