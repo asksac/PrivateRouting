@@ -58,7 +58,7 @@ resource "aws_vpc_endpoint" "vpce_ecr_s3" {
   tags                        = merge(local.common_tags, map("Name", "${var.app_shortcode}_s3_endpoint"))
 }
 
-# vpc endpoint to cloudwatch logs is required for fargate tasks using awslogs logDriver
+# vpc endpoint to cloudwatch logs is required for docker containers using awslogs logDriver
 # ref: https://docs.aws.amazon.com/AmazonECR/latest/userguide/vpc-endpoints.html#ecr-setting-up-cloudwatch-logs
 resource "aws_vpc_endpoint" "vpce_cw_logs" {
   service_name                = "com.amazonaws.${var.aws_region}.logs"
@@ -72,3 +72,18 @@ resource "aws_vpc_endpoint" "vpce_cw_logs" {
   security_group_ids          = [ aws_security_group.ecr_vpce_sg.id ]
   tags                        = merge(local.common_tags, map("Name", "${var.app_shortcode}_cw_logs_endpoint"))
 }
+
+/*
+resource "aws_vpc_endpoint" "vpce_ssm" {
+  service_name                = "com.amazonaws.${var.aws_region}.ssm"
+  vpc_id                      = aws_vpc.vpc2.id
+  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv2.id, aws_subnet.vpc2_subnet_priv2.id ]
+  private_dns_enabled         = true
+
+  auto_accept                 = true
+  vpc_endpoint_type           = "Interface"
+
+  security_group_ids          = [ aws_security_group.ecr_vpce_sg.id ]
+  tags                        = merge(local.common_tags, map("Name", "${var.app_shortcode}_ssm_endpoint"))
+}
+*/
