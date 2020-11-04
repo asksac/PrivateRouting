@@ -22,8 +22,8 @@ variable "source_cidr_blocks" {
   type = list
 }
 
-variable "image_uri" {
-  description         = "HAProxy Docker container image URI with tag"
+variable "ecr_image_uri" {
+  description         = "HAProxy Docker ECR container image URI with tag"
 }
 
 variable "proxy_config" {
