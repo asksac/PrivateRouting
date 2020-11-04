@@ -15,8 +15,8 @@ module "proxy_ecs" {
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
   source_cidr_blocks      = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
 
-  image_uri               = "${aws_ecr_repository.registry.repository_url}:1.0"
-  proxy_config            = local.proxy_config
+  ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"
+  proxy_config            = local.ecs_proxy_config
 
   common_tags             = local.common_tags
 }
@@ -32,7 +32,7 @@ module "proxy_ecs_endpoint" {
   subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id ] 
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
 
-  proxy_config            = local.proxy_config
+  proxy_config            = local.ecs_proxy_config
   endpoint_service_name   = module.proxy_ecs.endpoint_service_name
 
   common_tags             = local.common_tags
