@@ -20,6 +20,14 @@ variable "instance_type" {
   default                 = "c5.large"
 }
 
+variable "ecr_registry_id" {
+  description         = "ECR Registry ID, which is also ECR Docker FQDN prefix"
+}
+
+variable "ecr_image_uri" {
+  description         = "HAProxy Docker ECR container image URI with tag"
+}
+
 variable "source_cidr_blocks" {
   type                    = list
 }
