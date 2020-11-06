@@ -41,7 +41,7 @@ pid /run/nginx.pid;
 error_log  /var/log/nginx/error.log crit;
 
 events {
-  worker_connections  4096;  ## Default: 1024
+  worker_connections  8192;  ## Default: 1024
   multi_accept on; 
 }
 
@@ -77,6 +77,7 @@ EOF
 systemctl restart nginx
 systemctl status nginx
 
+<<COMMENTED
 yum install -y httpd
 
 mv /etc/httpd/conf/httpd.conf /etc/httpd/conf/httpd.conf.original
@@ -117,3 +118,5 @@ LogLevel warn
     Protocols h2 h2c http/1.1
 </IfModule>
 EOF
+
+COMMENTED
