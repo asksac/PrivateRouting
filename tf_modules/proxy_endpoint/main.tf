@@ -17,12 +17,12 @@ resource "aws_vpc_endpoint" "vpce" {
   vpc_endpoint_type       = "Interface"
 
   security_group_ids      = [ aws_security_group.endpoint_sg.id ]
-  tags                    = merge(var.common_tags, map("Name", "${var.endpoint_name}-vpc-endpoint"))
+  tags                    = merge(var.common_tags, map("Name", "${var.endpoint_name}-endpoint"))
 }
 
 resource "aws_route53_record" "vpce_alias_dns" {
   zone_id                 = var.dns_zone_id
-  name                    = var.endpoint_name
+  name                    = var.dns_custom_hostname
   type                    = "A"
 
   alias {

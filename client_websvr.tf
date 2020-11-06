@@ -14,11 +14,12 @@ module "test_websvr" {
 
   vpc_id                = aws_vpc.vpc3.id
   subnet_id             = aws_subnet.vpc3_subnet_pub1.id
-  dns_zone_id           = aws_route53_zone.dns_zone.zone_id
   vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
   source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr ]
   ssh_source_cidr_blocks  = ["0.0.0.0/0"]
 
+  dns_zone_id           = aws_route53_zone.dns_zone.zone_id
+  dns_custom_hostname   = "websvr"
   websvr_listen_ports   = local.test_websvr_ports
 
   common_tags           = local.common_tags
@@ -36,9 +37,11 @@ module "test_client" {
 
   vpc_id                = aws_vpc.vpc1.id
   subnet_id             = aws_subnet.vpc1_subnet_priv1.id
-  dns_zone_id           = aws_route53_zone.dns_zone.zone_id  
   vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
   source_cidr_blocks    = [ var.vpc2_cidr, var.vpc3_cidr ]
+
+  dns_zone_id           = aws_route53_zone.dns_zone.zone_id  
+  dns_custom_hostname   = "client"
 
   common_tags           = local.common_tags
 }

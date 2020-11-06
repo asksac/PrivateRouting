@@ -15,6 +15,10 @@ variable "subnet_ids" {
 
 variable "dns_zone_id" {}
 
+variable "dns_custom_hostname" {
+  description             = "Specify a custom Route53 record name to map to this VPC endpoint"
+}
+
 variable "endpoint_name" {}
 
 variable "endpoint_service_name" {}

@@ -38,7 +38,7 @@ resource "aws_instance" "client_ec2" {
 
 resource "aws_route53_record" "alias_dns" {
   zone_id                 = var.dns_zone_id
-  name                    = "client"
+  name                    = var.dns_custom_hostname 
   type                    = "A"
   ttl                     = "60"
   records                 = [ aws_instance.client_ec2.private_ip ]

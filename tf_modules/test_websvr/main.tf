@@ -49,7 +49,7 @@ resource "aws_instance" "websvr" {
 
 resource "aws_route53_record" "alias_dns" {
   zone_id                 = var.dns_zone_id
-  name                    = "websvr"
+  name                    = var.dns_custom_hostname
   type                    = "A"
   ttl                     = "60"
   records                 = [ aws_instance.websvr.private_ip ]

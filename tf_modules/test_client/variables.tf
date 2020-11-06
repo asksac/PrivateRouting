@@ -12,6 +12,10 @@ variable "vpc_route_table_id" {}
 
 variable "dns_zone_id" {}
 
+variable "dns_custom_hostname" {
+  description             = "Specify a custom Route53 record name to map to this client instance"
+}
+
 variable "ec2_ami_id" {}
 
 variable "ec2_instance_type" {

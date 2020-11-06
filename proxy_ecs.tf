@@ -32,6 +32,7 @@ module "proxy_ecs_endpoint" {
   #subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id, aws_subnet.vpc1_subnet_priv2.id ] 
   subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id ] 
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
+  dns_custom_hostname     = "proxy-ecs-vpce"
 
   proxy_config            = local.ecs_proxy_config
   endpoint_service_name   = module.proxy_ecs.endpoint_service_name
