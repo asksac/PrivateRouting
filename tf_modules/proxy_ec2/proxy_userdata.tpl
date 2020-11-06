@@ -22,13 +22,12 @@ defaults
 
 resolvers default
   parse-resolv-conf
-  #nameserver dns1 172.16.0.2:53
 
-%{ for name, pm in port_mappings }
+%{ for name, pm in port_mappings ~}
 listen ${name} 
   bind *:${pm.proxy_port}
   server ${name}-svr ${pm.backend_host}:${pm.backend_port} check resolvers default resolve-prefer ipv4
-%{ endfor }
+%{ endfor ~}
 EOF
 
 tee /root/docker-compose.yaml <<EOF
@@ -37,9 +36,9 @@ services:
   myhaproxy:
     image: ${ecr_image_uri}
     ports:
-%{ for name, pm in port_mappings }
+%{ for name, pm in port_mappings ~}
       - "${pm.proxy_port}:${pm.proxy_port}"
-%{ endfor }
+%{ endfor ~}
     command: ["haproxy", "-db", "-d", "-f", "/usr/local/etc/haproxy/haproxy.cfg"]
     volumes: 
       - "/root/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg"

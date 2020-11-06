@@ -1,3 +1,13 @@
+locals {
+  # convert list into map keyed on name, as for_each requires map type
+  # ignore any list objects where name contains non-alpha-numeric-hyphen chars
+  port_mappings_map   = {
+    for pm in var.proxy_config.port_mappings: 
+    pm.name => pm
+    if can(regex("^[0-9A-Za-z-]+$", pm.name)) 
+  }
+}
+
 resource "aws_vpc_endpoint" "vpce" {
   service_name            = var.endpoint_service_name
   vpc_id                  = var.vpc.id

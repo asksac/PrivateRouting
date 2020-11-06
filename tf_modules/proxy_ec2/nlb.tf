@@ -1,5 +1,5 @@
 resource "aws_lb" "nlb" {
-  name                    = "${var.app_shortcode}-proxysvr-nlb-${substr(uuid(),0, 3)}"
+  name                    = "${var.app_shortcode}-${var.proxy_config.service_name}-nlb-${substr(uuid(),0, 3)}"
   internal                = true
   load_balancer_type      = "network"
 
@@ -15,7 +15,7 @@ resource "aws_lb" "nlb" {
 }
 
 resource "aws_lb_listener" "nlb_listeners" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
   load_balancer_arn       = aws_lb.nlb.arn
   port                    = each.value.nlb_port # inbound port of NLB
@@ -28,18 +28,13 @@ resource "aws_lb_listener" "nlb_listeners" {
 }
 
 resource "aws_lb_target_group" "nlb_tgs" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
-  name                    = "${var.app_shortcode}-proxysvr-nlb-tg-${each.key}"
+  name                    = "${var.proxy_config.service_name}-tg-${each.key}"
   port                    = each.value.proxy_port # outbound port of NLB / inbound of targets
   protocol                = "TCP"
   target_type             = "instance" # Auto Scaling requires target type to be instance
   vpc_id                  = var.vpc_id
-
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes        = [name]
-  }
 }
 
 /*
@@ -50,15 +45,3 @@ resource "aws_lb_target_group_attachment" "nlb_tg_targets" {
   target_id               = aws_instance.proxy.private_ip
 }
 */
-
-resource "aws_route53_record" "nlb_dns" {
-  zone_id                 = var.dns_zone_id
-  name                    = "proxy-ec2-nlb"
-  type                    = "A"
-
-  alias {
-    name                  = aws_lb.nlb.dns_name
-    zone_id               = aws_lb.nlb.zone_id
-    evaluate_target_health= true
-  }
-}

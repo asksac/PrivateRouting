@@ -1,5 +1,5 @@
 resource "aws_ecs_cluster" "main" {
-  name                      = "${var.app_shortcode}-ecs-cluster"
+  name                      = "${var.app_shortcode}-${var.proxy_config.service_name}-cluster"
   tags                      = var.common_tags
 }
 
@@ -45,22 +45,10 @@ DEFINITION
   tags                      = var.common_tags
 }
 
-locals {
-  pm        = var.proxy_config.port_mappings
-  pm_len    = length(local.pm)
-  pm_gcount = ceil(local.pm_len / 5)
-  pm_groups = [ for i in range(local.pm_gcount): 
-                    zipmap(
-                      slice(keys(local.pm), i*5, (i+1)*5 > local.pm_len ? local.pm_len : (i+1)*5), 
-                      slice(values(local.pm), i*5, (i+1)*5 > local.pm_len ? local.pm_len : (i+1)*5)
-                    ) 
-                ]
-}
-
 resource "aws_ecs_service" "main" {
-  count                     = local.pm_gcount
+  count                     = local.port_mappings_group_count
 
-  name                      = "${var.app_shortcode}-ecs-service-${count.index}"
+  name                      = "${var.app_shortcode}-${var.proxy_config.service_name}-service-${count.index}"
   cluster                   = aws_ecs_cluster.main.id
   task_definition           = aws_ecs_task_definition.proxy_task.arn
   desired_count             = var.ecs_autoscale_min_instances
@@ -80,7 +68,7 @@ resource "aws_ecs_service" "main" {
   }
 
   dynamic "load_balancer" {
-    for_each                = local.pm_groups[count.index] # var.proxy_config.port_mappings
+    for_each                = local.port_mappings_group_map[count.index] 
 
     content {
       target_group_arn      = aws_lb_target_group.nlb_tgs[load_balancer.key].id

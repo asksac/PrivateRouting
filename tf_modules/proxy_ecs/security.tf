@@ -1,18 +1,6 @@
 resource "aws_security_group" "proxy_sg" {
-  name_prefix             = "${var.app_shortcode}-proxyecs-sg"
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-sg-"
   vpc_id                  = var.vpc_id
-
-  /*
-  dynamic "ingress" {
-    for_each              = var.proxy_config.port_mappings
-    content {
-      cidr_blocks         = var.source_cidr_blocks
-      from_port           = ingress.value.proxy_port
-      to_port             = ingress.value.proxy_port
-      protocol            = "tcp"
-    }
-  }
-  */
 
   egress {
     from_port             = 0
@@ -24,7 +12,7 @@ resource "aws_security_group" "proxy_sg" {
 }
 
 resource "aws_security_group_rule" "proxy_sg_rule" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
   type                    = "ingress"
   security_group_id       = aws_security_group.proxy_sg.id
@@ -36,7 +24,7 @@ resource "aws_security_group_rule" "proxy_sg_rule" {
 }
 
 resource "aws_iam_role" "proxy_exec_role" {
-  name                    = "${var.app_shortcode}-proxyecs-role"
+  name                    = "${var.app_shortcode}-${var.proxy_config.service_name}-role"
   assume_role_policy      = <<EOF
 {
   "Version": "2012-10-17",
@@ -61,7 +49,7 @@ EOF
 }
 
 resource "aws_iam_policy" "proxy_exec_role_permissions" {
-  name                    = "${var.app_shortcode}-proxyecs-role-permissions"
+  name                    = "${var.app_shortcode}-${var.proxy_config.service_name}-role-permissions"
   description             = "Provides ECS tasks access to AWS services such as ECR, CloudWatch, and SSM Parameter Store"
 
   policy                  = <<EOF

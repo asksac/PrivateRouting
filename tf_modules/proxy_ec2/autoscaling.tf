@@ -1,15 +1,5 @@
-locals {
-  proxy_userdata          = templatefile("${path.module}/proxy_userdata.tpl", {
-    aws_region            = var.aws_region
-    port_mappings         = var.proxy_config.port_mappings
-    ecr_docker_dns        = "${var.ecr_registry_id}.dkr.ecr.${var.aws_region}.amazonaws.com"
-    ecr_image_uri         = var.ecr_image_uri
-    log_group_name        = aws_cloudwatch_log_group.ec2_proxy_log_group.name
-  })
-}
-
 resource "aws_launch_template" "proxysvr_launch_template" {
-  name_prefix             = "${var.app_shortcode}-proxysvr-launch-tpl"
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-launch-tpl"
   description             = "Proxy Server Launch Template"
 
   image_id                = var.ec2_ami_id
@@ -20,7 +10,7 @@ resource "aws_launch_template" "proxysvr_launch_template" {
   iam_instance_profile {
     name                  = aws_iam_instance_profile.proxy_instance_profile.name
   } 
-  key_name                = var.ec2_ssh_keypair_name
+  key_name                = var.ec2_ssh_enabled ? var.ec2_ssh_keypair_name : null 
   vpc_security_group_ids  = [ aws_security_group.proxy_sg.id ]
 
   monitoring {
@@ -33,12 +23,12 @@ resource "aws_launch_template" "proxysvr_launch_template" {
 
   tag_specifications {
     resource_type         = "instance"
-    tags                  = merge(var.common_tags, map("Name", "${var.app_shortcode}-proxysvr"))
+    tags                  = merge(var.common_tags, map("Name", "${var.app_shortcode}-${var.proxy_config.service_name}"))
   }
 }
 
 resource "aws_autoscaling_group" "proxysvr_asg" {
-  name_prefix             = "${var.app_shortcode}-proxysvr-asg"
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-asg-"
 
   min_size                = var.min_cluster_size
   max_size                = var.max_cluster_size
@@ -56,8 +46,7 @@ resource "aws_autoscaling_group" "proxysvr_asg" {
   enabled_metrics         = ["GroupDesiredCapacity", "GroupInServiceInstances"]
 
   target_group_arns       = [ 
-    for tg in aws_lb_target_group.nlb_tgs: 
-      tg.arn
+    for tg in aws_lb_target_group.nlb_tgs: tg.arn
   ]
 
   lifecycle {
@@ -71,7 +60,7 @@ resource "aws_autoscaling_group" "proxysvr_asg" {
 }
 
 resource "aws_autoscaling_policy" "proxysvr_asg_incr_policy" {
-  name                    = "${var.app_shortcode}-proxysvr-asg-incr-policy"
+  name                    = "${var.app_shortcode}-${var.proxy_config.service_name}-asg-incr-policy"
   policy_type             = "SimpleScaling" # default is SimpleScaling
   scaling_adjustment      = 1
   adjustment_type         = "ChangeInCapacity"
@@ -80,7 +69,7 @@ resource "aws_autoscaling_policy" "proxysvr_asg_incr_policy" {
 }
 
 resource "aws_autoscaling_policy" "proxysvr_asg_decr_policy" {
-  name                    = "${var.app_shortcode}-proxysvr-asg-decr-policy"
+  name                    = "${var.app_shortcode}-${var.proxy_config.service_name}-asg-decr-policy"
   policy_type             = "SimpleScaling" # default is SimpleScaling
   scaling_adjustment      = -1
   adjustment_type         = "ChangeInCapacity"

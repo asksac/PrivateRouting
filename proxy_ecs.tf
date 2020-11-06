@@ -13,6 +13,7 @@ module "proxy_ecs" {
   #subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id ]
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
+  dns_custom_hostname     = "proxy-ecs-nlb"
   source_cidr_blocks      = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
 
   ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"

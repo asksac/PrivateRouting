@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
-  alarm_name              = "${var.app_shortcode}-proxysvr-high-cpu-alarm"
+  alarm_name              = "${var.app_shortcode}-${var.proxy_config.service_name}-high-cpu-alarm"
   comparison_operator     = "GreaterThanOrEqualToThreshold"
   evaluation_periods      = "1"
   metric_name             = "CPUUtilization"
@@ -16,7 +16,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cpu_utilization_low" {
-  alarm_name              = "${var.app_shortcode}-proxysvr-low-cpu-alarm"
+  alarm_name              = "${var.app_shortcode}-${var.proxy_config.service_name}-low-cpu-alarm"
   comparison_operator     = "LessThanThreshold"
   evaluation_periods      = "1"
   metric_name             = "CPUUtilization"

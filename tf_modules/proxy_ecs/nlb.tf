@@ -1,5 +1,5 @@
 resource "aws_lb" "nlb" {
-  name                    = "${var.app_shortcode}-proxyecs-nlb-${substr(uuid(),0, 3)}"
+  name                    = "${var.app_shortcode}-${var.proxy_config.service_name}-nlb-${substr(uuid(),0, 3)}"
   internal                = true
   load_balancer_type      = "network"
 
@@ -15,7 +15,7 @@ resource "aws_lb" "nlb" {
 }
 
 resource "aws_lb_listener" "nlb_listeners" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
   load_balancer_arn       = aws_lb.nlb.arn
   port                    = each.value.nlb_port # inbound port of NLB
@@ -28,9 +28,9 @@ resource "aws_lb_listener" "nlb_listeners" {
 }
 
 resource "aws_lb_target_group" "nlb_tgs" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
-  name                    = "${var.app_shortcode}-proxyecs-nlb-tg-${each.key}"
+  name                    = "${var.proxy_config.service_name}-tg-${each.key}"
   port                    = each.value.proxy_port # outbound port of NLB / inbound of targets
   protocol                = "TCP"  
   target_type             = "ip" # ECS requires target type as ip
@@ -41,7 +41,7 @@ resource "aws_lb_target_group" "nlb_tgs" {
     ignore_changes        = [name]
   }
 
-  deregistration_delay    = 180 # default is 300s
+  deregistration_delay    = 120 # default is 300s
 
   health_check {
     enabled               = true
@@ -53,17 +53,5 @@ resource "aws_lb_target_group" "nlb_tgs" {
     #timeout               = 10 # cannot be changed for nlb
     port                  = "traffic-port"
     protocol              = "TCP"
-  }
-}
-
-resource "aws_route53_record" "nlb_dns" {
-  zone_id                 = var.dns_zone_id
-  name                    = "proxy-ecs-nlb"
-  type                    = "A"
-
-  alias {
-    name                  = aws_lb.nlb.dns_name
-    zone_id               = aws_lb.nlb.zone_id
-    evaluate_target_health= true
   }
 }

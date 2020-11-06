@@ -30,13 +30,6 @@ variable "ssh_source_cidr_blocks" {
 
 variable "websvr_listen_ports" {
   type                    = map(list(number))
-  default                 = {
-    server_http_ports     = [ 80 ]
-    server_https_ports    = [ 443 ]
-    server_ssh_ports      = [ 22 ]
-    nginx_http_ports      = [ 8080, 8081 ]
-    nginx_https_ports     = [ 8443, 8444 ]
-  }
 }
 
 variable "common_tags" {}

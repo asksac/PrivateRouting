@@ -179,24 +179,3 @@ resource "aws_route" "vpc2_vpc1_peering_route" {
   destination_cidr_block    = aws_vpc.vpc1.cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc1_vpc2_peering.id
 }
-
-
-# ------------------- #
-## Route53 DNS Setup ##
-
-resource "aws_route53_zone" "dns_zone" {
-  name                      = "${var.app_shortcode}.internal"
-  comment                   = "Private DNS zone for mapping internal domain names for application ${var.app_name}"
-
-  vpc {
-    vpc_id                  = aws_vpc.vpc1.id
-  }
-
-  vpc {
-    vpc_id                  = aws_vpc.vpc2.id
-  }
-
-  vpc {
-      vpc_id                = aws_vpc.vpc3.id
-  }
-}

@@ -14,6 +14,10 @@ variable "subnet_ids" {
 
 variable "dns_zone_id" {}
 
+variable "dns_custom_hostname" {
+  description             = "Specify a custom Route53 record name to map to NLB"
+}
+
 variable "ec2_ami_id" {}
 
 variable "instance_type" {
@@ -21,11 +25,11 @@ variable "instance_type" {
 }
 
 variable "ecr_registry_id" {
-  description         = "ECR Registry ID, which is also ECR Docker FQDN prefix"
+  description             = "ECR Registry ID, which is also ECR Docker FQDN prefix"
 }
 
 variable "ecr_image_uri" {
-  description         = "HAProxy Docker ECR container image URI with tag"
+  description             = "HAProxy Docker ECR container image URI with tag"
 }
 
 variable "source_cidr_blocks" {
@@ -52,6 +56,12 @@ variable "autoscaling_low_cpu_mark" {
   default                 = 20
 }
 
+variable "ec2_ssh_enabled" {
+  type                    = bool 
+  default                 = false
+  description             = "Specify whether ssh access into proxy ec2 instances are enabled"
+}
+
 variable "ec2_ssh_keypair_name" {
   type                    = string
   description             = "Specify name of an existing EC2 keypair, e.g. my_key"
@@ -60,7 +70,8 @@ variable "ec2_ssh_keypair_name" {
 variable "proxy_config" {
   type = object({
     service_name          = string
-    port_mappings         = map(object({
+    port_mappings         = list(object({
+      name                = string
       description         = string
       backend_host        = string
       backend_port        = number

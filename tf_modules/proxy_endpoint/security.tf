@@ -1,18 +1,10 @@
 resource "aws_security_group" "endpoint_sg" {
-  name_prefix             = "${var.endpoint_name}-endpoint-sg"
+  name_prefix             = "${var.endpoint_name}-endpoint-sg-"
   vpc_id                  = var.vpc.id
 
-  /*
-  dynamic "ingress" {
-    for_each              = var.proxy_config.port_mappings
-    content {
-      cidr_blocks         = [ var.vpc.cidr_block ]
-      from_port           = ingress.value.nlb_port
-      to_port             = ingress.value.nlb_port
-      protocol            = "tcp"
-    }
+  lifecycle {
+    create_before_destroy = true
   }
-  */
 
   egress {
     from_port             = 0
@@ -23,7 +15,7 @@ resource "aws_security_group" "endpoint_sg" {
 }
 
 resource "aws_security_group_rule" "endpoint_sg_rule" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
   type                    = "ingress"
   security_group_id       = aws_security_group.endpoint_sg.id

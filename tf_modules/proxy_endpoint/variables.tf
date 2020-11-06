@@ -22,7 +22,8 @@ variable "endpoint_service_name" {}
 variable "proxy_config" {
   type = object({
     service_name          = string
-    port_mappings         = map(object({
+    port_mappings         = list(object({
+      name                = string
       description         = string
       backend_host        = string
       backend_port        = number

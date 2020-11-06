@@ -1,18 +1,6 @@
 resource "aws_security_group" "proxy_sg" {
-  name_prefix             = "${var.app_shortcode}-proxysvr-sg" # sg name can be 255 char long
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-sg-" # sg name can be 255 char long
   vpc_id                  = var.vpc_id
-
-  /*
-  dynamic "ingress" {
-    for_each              = var.proxy_config.port_mappings
-    content {
-      cidr_blocks         = var.source_cidr_blocks
-      from_port           = ingress.value.proxy_port
-      to_port             = ingress.value.proxy_port
-      protocol            = "tcp"
-    }
-  }
-  */
 
   egress {
     from_port             = 0
@@ -23,7 +11,10 @@ resource "aws_security_group" "proxy_sg" {
   tags                    = var.common_tags
 }
 
+# rule to allow ssh access to proxy ec2 instances if enabled
 resource "aws_security_group_rule" "proxy_sg_ssh_rule" {
+  count                   = var.ec2_ssh_enabled ? 1 : 0
+  
   type                    = "ingress"
   security_group_id       = aws_security_group.proxy_sg.id
 
@@ -34,7 +25,7 @@ resource "aws_security_group_rule" "proxy_sg_ssh_rule" {
 }
 
 resource "aws_security_group_rule" "proxy_sg_rule" {
-  for_each                = var.proxy_config.port_mappings
+  for_each                = local.port_mappings_map
 
   type                    = "ingress"
   security_group_id       = aws_security_group.proxy_sg.id
@@ -46,7 +37,7 @@ resource "aws_security_group_rule" "proxy_sg_rule" {
 }
 
 resource "aws_iam_role" "proxy_exec_role" {
-  name_prefix             = "${var.app_shortcode}-proxysvr-exec-role"
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-exec-role-"
   assume_role_policy      = <<EOF
 {
   "Version": "2012-10-17",
@@ -70,8 +61,8 @@ EOF
 }
 
 resource "aws_iam_policy" "proxy_exec_role_permissions" {
-  name_prefix             = "${var.app_shortcode}-proxysvr-exec-role-permissions"
-  description             = "Provides proxy EC2 instance access to other AWS services"
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-exec-role-permissions-"
+  description             = "Provides proxy instance access to other AWS services"
 
   policy                  = <<EOF
 {
@@ -101,7 +92,7 @@ resource "aws_iam_role_policy_attachment" "proxy_exec_role_policy" {
 }
 
 resource "aws_iam_instance_profile" "proxy_instance_profile" {
-  name_prefix             = "${var.app_shortcode}-proxysvr-instance-profile"
+  name_prefix             = "${var.app_shortcode}-${var.proxy_config.service_name}-instance-profile-"
   role                    = aws_iam_role.proxy_exec_role.name
 
   depends_on              = [ aws_iam_role.proxy_exec_role ]
