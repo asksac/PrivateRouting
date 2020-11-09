@@ -1,6 +1,6 @@
 resource "aws_security_group" "endpoint_sg" {
-  name_prefix             = "${var.endpoint_name}-endpoint-sg-"
-  vpc_id                  = var.vpc.id
+  name_prefix             = "${var.app_shortcode}-sg-${var.dns_custom_hostname}-"
+  vpc_id                  = var.vpc_id
 
   lifecycle {
     create_before_destroy = true
@@ -20,7 +20,7 @@ resource "aws_security_group_rule" "endpoint_sg_rule" {
   type                    = "ingress"
   security_group_id       = aws_security_group.endpoint_sg.id
 
-  cidr_blocks             = [ var.vpc.cidr_block ]
+  cidr_blocks             = var.source_cidr_blocks
   from_port               = each.value.nlb_port
   to_port                 = each.value.nlb_port
   protocol                = "tcp"

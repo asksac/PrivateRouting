@@ -1,0 +1,7 @@
+formatter: markdown table
+header-from: main.tf
+sections: 
+settings: 
+  color: true
+  indent: 2
+  required: true
