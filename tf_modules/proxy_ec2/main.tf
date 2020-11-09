@@ -1,8 +1,7 @@
 /**
  * # Module: proxy_ec2
  *
- * This module can be used to deploy an HAProxy cluster running on EC2 instances, and 
- * managed by an EC2 Auto Scaling group. 
+ * This module can be used to deploy an HAProxy cluster running on EC2 instances, and managed by an EC2 Auto Scaling group. 
  * 
  * ### Usage: 
  * 

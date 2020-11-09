@@ -1,10 +1,6 @@
 # Module: proxy\_ecs
 
-This module can be used to deploy HAProxy running on an ECS Fargate cluster, with  
-capacity automatically managed based on specified min and max cluster sizes, and auto-  
-scaling low and high cpu marks. Each module can support up to 50 `port_mappings` rules  
-specified through `proxy_config` variable. Module will create multiple ECS Services,  
-one for every 5 port mapping rules.
+This module can be used to deploy HAProxy running on an ECS Fargate cluster, with capacity automatically managed based on specified min and max cluster sizes, and auto-scaling low and high cpu marks. Each module can support up to 50 `port_mappings` rules specified through `proxy_config` variable. Module will create multiple ECS Services, one for every 5 port mapping rules.
 
 ### Usage:
 

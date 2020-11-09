@@ -1,10 +1,7 @@
 /**
  * # Module: test_client
  *
- * This module can be used to create a client ec2 instance to assist in testing  
- * of HAProxy cluster (refer to diagram to see where client instance is located). 
- * By default, the client instance has `httpd-tools` installed. This provides access
- * to utilities such as Apache Bench (for load testing). 
+ * This module can be used to create a client ec2 instance to assist in testing of HAProxy cluster (refer to diagram to see where client instance is located). By default, the client instance has `httpd-tools` package installed. This provides access to utilities such as Apache Bench (for load testing). 
  * 
  * ### Usage: 
  * 
@@ -32,6 +29,13 @@
  * }
  * ```
  */
+
+terraform {
+  required_version    = ">= 0.12"
+  required_providers {
+    aws               = ">= 3.11.0"
+  }
+}
 
 locals {
   client_user_data        = templatefile("${path.module}/client_userdata.tpl", {

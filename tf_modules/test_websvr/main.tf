@@ -42,6 +42,13 @@
  * ```
  */
 
+terraform {
+  required_version    = ">= 0.12"
+  required_providers {
+    aws               = ">= 3.11.0"
+  }
+}
+
 locals {
   websvr_user_data        = templatefile("${path.module}/websvr_userdata.tpl", {
     websvr_listen_ports   = var.websvr_listen_ports

@@ -1,17 +1,53 @@
 # Module: proxy\_endpoint
 
-This module assists in creating a VPC endpoint associated with a specified Endpoint  
-Service, such as a Network Load Balancer.
+This module assists in creating a VPC endpoint associated with a specified Endpoint Service, such as a Network Load Balancer.
+
+### Usage:
+
+```hcl
+module "ecs_proxy_endpoint" {
+  source                    = "./tf_modules/proxy_endpoint"
+
+  app_shortcode             = "prt"
+
+  endpoint_service_name     = module.proxy_ecs.endpoint_service_name
+  vpc_id                    = aws_vpc.my_non_routable_vpc.id
+  subnet_ids                = [ aws_subnet.my_non_routable_vpc_subnet1.id ]
+  source_cidr_blocks        = [ aws_vpc.my_non_routable_vpc.cidr_block ]
+
+  dns_zone_id               = aws_route53_zone.dns_zone.zone_id
+  dns_custom_hostname       = "proxy-ecs-endpoint"
+
+  proxy_config              = {
+    service_name            = "myproxy"
+    port_mappings           = [
+      {
+        name                = "api_svc"
+        description         = "Connection to backend API service"
+        backend_host        = "api.corp.mydomain.net"
+        backend_port        = 443
+        nlb_port            = 8443
+        proxy_port          = 8443
+      }
+    ]
+  }
+
+  common_tags               = local.common_tags
+}
+```
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| aws | >= 3.11.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 3.11.0 |
 
 ## Inputs
 

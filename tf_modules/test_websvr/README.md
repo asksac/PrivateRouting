@@ -42,13 +42,16 @@ module "test_websvr" {
 
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| aws | >= 3.11.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| aws | >= 3.11.0 |
 
 ## Inputs
 
