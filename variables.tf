@@ -106,10 +106,9 @@ variable "vpc2_subnet_nlb_priv_ip" {
 
 ## VPC #3 ##
 
-# using a public IP space for VPC
 variable "vpc3_cidr" {
   type    = string
-  default = "192.168.0.0/16" # "200.10.0.0/16"
+  default = "192.168.0.0/16" 
 }
 
 variable "vpc3_name" {
@@ -119,7 +118,7 @@ variable "vpc3_name" {
 
 variable "vpc3_subnet_pub1_cidr" {
   type    = string
-  default = "192.168.1.0/24" # "200.10.1.0/24"
+  default = "192.168.1.0/24" 
 }
 
 variable "vpc3_subnet_pub1_name" {
@@ -127,7 +126,12 @@ variable "vpc3_subnet_pub1_name" {
   default = "vpc3_pub1"
 }
 
-## Test WebServer Setup ##
+## WebServer Addon Rule Setup ##
+
+# Note: For Testing Only 
+# This enables a direct forwarding rule from NLB (proxy_ec2) to WebSvr, bypassing 
+# HAProxy. It serves as a baseline for comparing performance impact of HAProxy 
+# during load testing.  
 
 variable "addon_nlb_port" {
   default = 10080
