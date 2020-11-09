@@ -74,9 +74,9 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| private\_dns | n/a |
-| private\_ip | n/a |
-| public\_dns | n/a |
-| alias\_dns | n/a |
-| instance\_id | n/a |
+| private\_dns | Private DNS name associated with this webserver instance |
+| private\_ip | Private IP address associated with this webserver instance |
+| public\_dns | Private DNS name associated with this webserver instance |
+| alias\_dns | FQDN of alias DNS name associated with this webserver instance |
+| instance\_id | EC2 instance id of this webserver |
 

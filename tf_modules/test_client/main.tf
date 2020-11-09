@@ -1,3 +1,38 @@
+/**
+ * # Module: test_client
+ *
+ * This module can be used to create a client ec2 instance to assist in testing  
+ * of HAProxy cluster (refer to diagram to see where client instance is located). 
+ * By default, the client instance has `httpd-tools` installed. This provides access
+ * to utilities such as Apache Bench (for load testing). 
+ * 
+ * ### Usage: 
+ * 
+ * ```hcl
+ * module "test_client" {
+ *   source = "./tf_modules/test_client"
+ * 
+ *   aws_region            = "us-east-1"
+ *   app_shortcode         = "prt"
+ * 
+ *   ec2_ami_id            = data.aws_ami.ec2_ami.id
+ *   ec2_instance_type     = "m5.large"
+ *   ec2_ssh_keypair_name  = "my_ssh_keypair"
+ * 
+ *   vpc_id                = aws_vpc.my_non_routable_vpc.id
+ *   subnet_id             = aws_subnet.my_non_routable_vpc_subnet1.id
+ *   s3_endpoint_enabled   = true
+ *   vpc_route_table_id    = aws_vpc.my_non_routable_vpc.main_route_table_id
+ *   source_cidr_blocks    = [ aws_vpc.my_bastion_vpc.cidr_block ]
+ * 
+ *   dns_zone_id           = aws_route53_zone.dns_zone.zone_id  
+ *   dns_custom_hostname   = "client"
+
+ *   common_tags           = local.common_tags
+ * }
+ * ```
+ */
+
 locals {
   client_user_data        = templatefile("${path.module}/client_userdata.tpl", {
   })
@@ -46,6 +81,8 @@ resource "aws_route53_record" "alias_dns" {
 
 # create s3 endpoint to allow access to amzn yum repo
 resource "aws_vpc_endpoint" "client_vpce_s3" {
+  count                   = var.s3_endpoint_enabled ? 1 : 0
+  
   service_name            = "com.amazonaws.${var.aws_region}.s3"
 
   vpc_id                  = var.vpc_id
