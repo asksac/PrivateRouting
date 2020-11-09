@@ -51,7 +51,7 @@ resource "aws_ecs_service" "main" {
   name                      = "${var.app_shortcode}-${var.proxy_config.service_name}-service-${count.index}"
   cluster                   = aws_ecs_cluster.main.id
   task_definition           = aws_ecs_task_definition.proxy_task.arn
-  desired_count             = var.ecs_autoscale_min_instances
+  desired_count             = var.min_cluster_size
   launch_type               = "FARGATE"
 
   lifecycle {

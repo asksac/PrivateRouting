@@ -13,7 +13,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
   namespace                       = "AWS/ECS"
   period                          = "60"
   statistic                       = "Average"
-  threshold                       = var.ecs_high_cpu_mark
+  threshold                       = var.autoscaling_high_cpu_mark
 
   dimensions = {
     ClusterName                   = aws_ecs_cluster.main.name
@@ -33,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_low" {
   namespace                       = "AWS/ECS"
   period                          = "60"
   statistic                       = "Average"
-  threshold                       = var.ecs_low_cpu_mark
+  threshold                       = var.autoscaling_low_cpu_mark
 
   dimensions = {
     ClusterName                   = aws_ecs_cluster.main.name
