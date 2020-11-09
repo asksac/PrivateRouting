@@ -31,17 +31,17 @@ module "proxy_ec2_endpoint" {
   source                  = "./tf_modules/proxy_endpoint"
 
   app_shortcode           = var.app_shortcode
-  endpoint_name           = "proxy-ec2-vpce"
+  endpoint_service_name   = module.proxy_ec2.endpoint_service_name
 
-  vpc                     = aws_vpc.vpc1
+  vpc_id                  = aws_vpc.vpc1.id
   #subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id, aws_subnet.vpc1_subnet_priv2.id ] 
   subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id ] 
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
   dns_custom_hostname     = "proxy-ec2-vpce"
+  source_cidr_blocks      = [ var.vpc1_cidr ]
 
   proxy_config            = local.ec2_proxy_config
-  endpoint_service_name   = module.proxy_ec2.endpoint_service_name
-
+  
   common_tags             = local.common_tags
 }
 

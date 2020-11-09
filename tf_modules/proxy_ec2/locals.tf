@@ -1,3 +1,10 @@
+/**
+ * # Module: proxy_ec2
+ *
+ * This module can be used to deploy an HAProxy cluster running on EC2 instances
+ * managed by an EC2 Auto Scaling group. 
+ */
+
 locals {
   # convert list into map keyed on name, as for_each requires map type
   # ignore any list objects where name contains non-alpha-numeric-hyphen chars
