@@ -1,4 +1,14 @@
 /*
+variable "vpc2_subnet_pub1_cidr" {
+  type    = string
+  default = "172.16.2.0/24"
+}
+
+variable "vpc2_subnet_pub1_name" {
+  type    = string
+  default = "vpc2_pub1"
+}
+
 # -----
 # Creates a public subnet and an IGW in VPC2
 
