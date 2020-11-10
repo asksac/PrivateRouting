@@ -49,9 +49,11 @@ module "proxy_ec2_endpoint" {
 # Output
 #
 output "proxy_ec2" {
-  value = {
+  value                   = {
     "nlb_dns"             = module.proxy_ec2.nlb_dns
     "endpoint_dns"        = module.proxy_ec2_endpoint.endpoint_dns 
     "endpoint_alias_dns"  = module.proxy_ec2_endpoint.alias_dns
   }
+
+  description             = "DNS values of NLB and Endpoint associated with HAProxy on EC2 cluster"
 }
