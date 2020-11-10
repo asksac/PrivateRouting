@@ -14,8 +14,9 @@ module "test_websvr" {
 
   vpc_id                = aws_vpc.vpc3.id
   subnet_id             = aws_subnet.vpc3_subnet_pub1.id
-  vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
-  source_cidr_blocks    = [ var.vpc1_cidr, var.vpc2_cidr ]
+  s3_endpoint_enabled   = true # enables amzn yum repo access
+  vpc_route_table_id    = aws_vpc.vpc3.main_route_table_id
+  source_cidr_blocks    = [ var.vpc2_cidr ]
   ssh_source_cidr_blocks  = ["0.0.0.0/0"]
 
   dns_zone_id           = aws_route53_zone.dns_zone.zone_id
@@ -37,6 +38,7 @@ module "test_client" {
 
   vpc_id                = aws_vpc.vpc1.id
   subnet_id             = aws_subnet.vpc1_subnet_priv1.id
+  s3_endpoint_enabled   = true # enables amzn yum repo access
   vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
   source_cidr_blocks    = [ var.vpc2_cidr, var.vpc3_cidr ]
 
@@ -50,17 +52,21 @@ module "test_client" {
 # Output
 #
 output "webserver_details" {
-  value = {
+  value                   = {
     "private_dns"         = module.test_websvr.private_dns
     "public_dns"          = module.test_websvr.public_dns
     "alias_dns"           = module.test_websvr.alias_dns
   }
+
+  description             = "DNS values of Test WebServer instance"
 }
 
 output "client_details" {
-  value = {
+  value                   = {
     "private_dns"         = module.test_client.private_dns
     "public_dns"          = module.test_client.public_dns
     "alias_dns"           = module.test_client.alias_dns
   }
+
+  description             = "DNS values of Test Client instance"
 }
