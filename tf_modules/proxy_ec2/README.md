@@ -22,7 +22,8 @@ module "proxy_ec2" {
   instance_type             = "t3.medium"
   ec2_ssh_enabled           = true
   ec2_ssh_keypair_name      = "my_ssh_keypair"
-  source_cidr_blocks        = [ aws_vpc.my_non_routable_vpc.cidr_block ]
+  ssh_source_cidr_blocks    = [ aws_vpc.my_bastion_vpc.cidr_block ]
+  source_cidr_blocks        = [ aws_vpc.my_routable_vpc.cidr_block ]
 
   ecr_registry_id           = aws_ecr_repository.my_registry.registry_id
   ecr_image_uri             = "${aws_ecr_repository.my_registry.repository_url}:1.0"
@@ -78,6 +79,7 @@ module "proxy_ec2" {
 | instance\_type | Specify EC2 instance type, e.g. c5.large | `string` | `"c5.large"` | no |
 | ec2\_ssh\_enabled | Specify whether ssh access into proxy ec2 instances are enabled | `bool` | `false` | no |
 | ec2\_ssh\_keypair\_name | Specify name of an existing EC2 keypair, e.g. my\_key | `string` | `null` | no |
+| ssh\_source\_cidr\_blocks | Specify list of source CIDR ranges for security group's SSH ingress | `list` | `null` | no |
 | source\_cidr\_blocks | Specify list of source CIDR ranges for security group's ingress rules | `list` | n/a | yes |
 | ecr\_registry\_id | Specify ECR Registry ID where HAProxy container image is stored | `string` | n/a | yes |
 | ecr\_image\_uri | Specify the HAProxy ECR container image URI with tag | `string` | n/a | yes |

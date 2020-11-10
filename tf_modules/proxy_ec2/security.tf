@@ -18,7 +18,7 @@ resource "aws_security_group_rule" "proxy_sg_ssh_rule" {
   type                    = "ingress"
   security_group_id       = aws_security_group.proxy_sg.id
 
-  cidr_blocks             = var.source_cidr_blocks
+  cidr_blocks             = var.ssh_source_cidr_blocks
   from_port               = 22
   to_port                 = 22
   protocol                = "tcp"

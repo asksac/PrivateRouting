@@ -20,7 +20,7 @@
  *   subnet_id             = aws_subnet.my_non_routable_vpc_subnet1.id
  *   s3_endpoint_enabled   = true
  *   vpc_route_table_id    = aws_vpc.my_non_routable_vpc.main_route_table_id
- *   source_cidr_blocks    = [ aws_vpc.my_bastion_vpc.cidr_block ]
+ *   ssh_source_cidr_blocks= [ aws_vpc.my_bastion_vpc.cidr_block ]
  * 
  *   dns_zone_id           = aws_route53_zone.dns_zone.zone_id  
  *   dns_custom_hostname   = "client"
@@ -47,7 +47,7 @@ resource "aws_security_group" "client_sg" {
   vpc_id                  = var.vpc_id
 
   ingress {
-    cidr_blocks           = var.source_cidr_blocks
+    cidr_blocks           = var.ssh_source_cidr_blocks
     from_port             = 22
     to_port               = 22
     protocol              = "tcp"

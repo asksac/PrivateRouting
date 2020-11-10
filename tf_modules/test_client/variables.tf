@@ -35,9 +35,9 @@ variable "ec2_ssh_keypair_name" {
   description             = "Specify name of an existing EC2 keypair, e.g. my_key"
 }
 
-variable "source_cidr_blocks" {
+variable "ssh_source_cidr_blocks" {
   type                    = list
-  description             = "Specify list of source CIDR ranges for security group's ingress rules"
+  description             = "Specify list of source CIDR ranges for security group's SSH ingress"
 }
 
 variable "s3_endpoint_enabled" {

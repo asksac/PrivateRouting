@@ -18,7 +18,7 @@ module "proxy_ecs" {
   dns_zone_id               = aws_route53_zone.my_dns_zone.zone_id
   dns_custom_hostname       = "myproxy"
 
-  source_cidr_blocks        = [ aws_vpc.my_non_routable_vpc.cidr_block ]
+  source_cidr_blocks        = [ aws_vpc.my_routable_vpc.cidr_block ]
   ecr_image_uri             = "${aws_ecr_repository.my_registry.repository_url}:1.0"
 
   min_cluster_size          = 1
