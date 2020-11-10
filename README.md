@@ -4,11 +4,11 @@
 
 This repo offers an example of how network connections can be securely
 routed from an AWS VPC to any external network that uses public IP addresses, 
-using a cluster of HAProxy deployed on AWS Fargate. There is also an option
-to deploy HAProxy on an EC2 cluster managed by AWS Auto Scaling. 
+using a cluster of HAProxy deployed on AWS Fargate or on a cluster of EC2 instances.  
 
 HAProxy is used here as a lightweight and highly performant L4 TCP proxy that 
-supports DNS resolution of backend hosts. 
+supports DNS based backend hostnames. 
+
 
 ## Diagram
 
@@ -16,6 +16,7 @@ The diagram below shows how networking and infrastructure is setup in this
 project: 
 
 ![AWS VPC network diagram](docs/images/aws_vpc_diagram.png)
+
 
 ## Deployment
 
@@ -40,12 +41,13 @@ as a maximum of 5 rules are supported at the moment)
 
 ### Useful commands
 
-- Login to ECR: `aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <accountid>.dkr.ecr.us-east-1.amazonaws.com`
+- Login to ECR: `aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <accountid>.dkr.ecr.<region>.amazonaws.com`
 - Pull container image: `docker pull <accountid>.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
 - List docker images: `docker images`
 - Start a docker container: `docker run -d --rm --ulimit nofile=10000:10000 -p 88:8888 <accountid>.dkr.ecr.us-east-1.amazonaws.com/prt-registry:1.0`
 - List running containers: `docker container ps`
 - SSH into a container: `docker exec -it <container_id> /bin/sh`
+- Set SSM Parameter: `export HAPROXY_CONFIG=$(aws ssm get-parameters --name /PrivateRouting/HAPROXY_CONFIG --region us-east-1 --query Parameters[0].Value --output text)`
 
 ### Important links
 
@@ -97,6 +99,8 @@ License     : GPLv2+
 ...
 ```
 
+> :bell: Note: The HAProxy Docker container image used in this project is based on the image published on ![Docker Hub](https://hub.docker.com/_/haproxy). If you do not have Internet access, you will need to pull the Docker Hub image from a machine with Internet access and then push the image to a private registry such as Amazon ECR. 
+
 To generate a self-signed SSL certificate required to run `server.py` with `--tls` flag, run the 
 following command: 
 
@@ -107,23 +111,6 @@ openssl req -x509 -nodes -newkey rsa:1024 -keyout config/ssl/key.pem -out config
 
 *As this is for testing purposes only, we are generating the private key file with no password (-nodes), 
 using a longer duration (-days 1825) and using dummy certificate details (-subj)*
-
-## Changelog
-
-Updates on 2020-10-16:
-- Added AutoScaling of ECS Fargate cluster
-
-Updates on 2020-10-15:
-- Separate terraform modules, one each for:
-  - HAProxy on ECS Fargate cluster
-  - HAProxy on EC2 (helpful for testing)
-- Support for multiple subnets 
-- Using PrivateLink (VPC endpoints) for ECR, S3 and CloudWatch Logs
-- Eliminated need for NATGW in HAProxy VPC
-
-Updates on 2020-10-14:
-- Support for an input map object to configure HAProxy rules
-- Refactor haproxy code from root module to sub-modules 
 
 
 ## License

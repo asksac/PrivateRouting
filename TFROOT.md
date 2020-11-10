@@ -53,8 +53,8 @@ The default configuration for the demo environment is based on variables and val
 
 | Name | Description |
 |------|-------------|
-| webserver\_details | DNS values of Test WebServer instance |
-| client\_details | DNS values of Test Client instance |
 | proxy\_ecs | DNS values of NLB and Endpoint associated with HAProxy on ECS cluster |
 | proxy\_ec2 | DNS values of NLB and Endpoint associated with HAProxy on EC2 cluster |
+| webserver\_details | DNS values of Test WebServer instance |
+| client\_details | DNS values of Test Client instance |
 
