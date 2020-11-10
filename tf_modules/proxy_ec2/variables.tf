@@ -53,6 +53,7 @@ variable "ec2_ssh_enabled" {
 
 variable "ec2_ssh_keypair_name" {
   type                    = string
+  default                 = null 
   description             = "Specify name of an existing EC2 keypair, e.g. my_key"
 }
 

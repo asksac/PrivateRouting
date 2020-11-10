@@ -77,7 +77,7 @@ module "proxy_ec2" {
 | ec2\_ami\_id | Specify an AMI ID to be used for EC2 instance creation | `string` | n/a | yes |
 | instance\_type | Specify EC2 instance type, e.g. c5.large | `string` | `"c5.large"` | no |
 | ec2\_ssh\_enabled | Specify whether ssh access into proxy ec2 instances are enabled | `bool` | `false` | no |
-| ec2\_ssh\_keypair\_name | Specify name of an existing EC2 keypair, e.g. my\_key | `string` | n/a | yes |
+| ec2\_ssh\_keypair\_name | Specify name of an existing EC2 keypair, e.g. my\_key | `string` | `null` | no |
 | source\_cidr\_blocks | Specify list of source CIDR ranges for security group's ingress rules | `list` | n/a | yes |
 | ecr\_registry\_id | Specify ECR Registry ID where HAProxy container image is stored | `string` | n/a | yes |
 | ecr\_image\_uri | Specify the HAProxy ECR container image URI with tag | `string` | n/a | yes |
