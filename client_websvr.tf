@@ -40,7 +40,7 @@ module "test_client" {
   subnet_id             = aws_subnet.vpc1_subnet_priv1.id
   s3_endpoint_enabled   = true # enables amzn yum repo access
   vpc_route_table_id    = aws_vpc.vpc1.main_route_table_id
-  source_cidr_blocks    = [ var.vpc2_cidr, var.vpc3_cidr ]
+  ssh_source_cidr_blocks = [ var.vpc2_cidr, var.vpc3_cidr ]
 
   dns_zone_id           = aws_route53_zone.dns_zone.zone_id  
   dns_custom_hostname   = "client"
