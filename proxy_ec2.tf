@@ -15,10 +15,11 @@ module "proxy_ec2" {
   subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id ]
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
   dns_custom_hostname     = "proxy-ec2-nlb"
-  source_cidr_blocks      = [ var.vpc1_cidr, var.vpc2_cidr, var.vpc3_cidr ]
+  source_cidr_blocks      = [ var.vpc1_cidr ]
 
   ec2_ami_id              = data.aws_ami.ec2_ami.id
-  ec2_ssh_keypair_name    = var.ec2_ssh_keypair_name
+  ec2_ssh_enabled         = false
+  #ec2_ssh_keypair_name    = var.ec2_ssh_keypair_name
 
   ecr_registry_id         = aws_ecr_repository.registry.registry_id
   ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"
