@@ -23,7 +23,8 @@
  *   instance_type             = "t3.medium"
  *   ec2_ssh_enabled           = true
  *   ec2_ssh_keypair_name      = "my_ssh_keypair"
- *   source_cidr_blocks        = [ aws_vpc.my_non_routable_vpc.cidr_block ]
+ *   ssh_source_cidr_blocks    = [ aws_vpc.my_bastion_vpc.cidr_block ]
+ *   source_cidr_blocks        = [ aws_vpc.my_routable_vpc.cidr_block ]
  *
  *   ecr_registry_id           = aws_ecr_repository.my_registry.registry_id
  *   ecr_image_uri             = "${aws_ecr_repository.my_registry.repository_url}:1.0"
