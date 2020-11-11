@@ -24,7 +24,7 @@ resource "aws_security_group" "ecr_vpce_sg" {
 resource "aws_vpc_endpoint" "vpce_ecr_dkr" {
   service_name                = "com.amazonaws.${var.aws_region}.ecr.dkr"
   vpc_id                      = aws_vpc.vpc2.id
-  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv2.id, aws_subnet.vpc2_subnet_priv2.id ]
+  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   private_dns_enabled         = true
 
   auto_accept                 = true
@@ -37,7 +37,7 @@ resource "aws_vpc_endpoint" "vpce_ecr_dkr" {
 resource "aws_vpc_endpoint" "vpce_ecr_api" {
   service_name                = "com.amazonaws.${var.aws_region}.ecr.api"
   vpc_id                      = aws_vpc.vpc2.id
-  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv2.id, aws_subnet.vpc2_subnet_priv2.id ]
+  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   private_dns_enabled         = true
 
   auto_accept                 = true
@@ -63,7 +63,7 @@ resource "aws_vpc_endpoint" "vpce_ecr_s3" {
 resource "aws_vpc_endpoint" "vpce_cw_logs" {
   service_name                = "com.amazonaws.${var.aws_region}.logs"
   vpc_id                      = aws_vpc.vpc2.id
-  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv2.id, aws_subnet.vpc2_subnet_priv2.id ]
+  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   private_dns_enabled         = true
 
   auto_accept                 = true
@@ -77,7 +77,7 @@ resource "aws_vpc_endpoint" "vpce_cw_logs" {
 resource "aws_vpc_endpoint" "vpce_ssm" {
   service_name                = "com.amazonaws.${var.aws_region}.ssm"
   vpc_id                      = aws_vpc.vpc2.id
-  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv2.id, aws_subnet.vpc2_subnet_priv2.id ]
+  subnet_ids                  = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
   private_dns_enabled         = true
 
   auto_accept                 = true
