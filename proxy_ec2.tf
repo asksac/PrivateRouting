@@ -11,8 +11,8 @@ module "proxy_ec2" {
   app_shortcode           = var.app_shortcode
 
   vpc_id                  = aws_vpc.vpc2.id
-  #subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
-  subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id ]
+  subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id, aws_subnet.vpc2_subnet_priv2.id ]
+  #subnet_ids              = [ aws_subnet.vpc2_subnet_priv1.id ]
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
   dns_custom_hostname     = "proxy-ec2-nlb"
   source_cidr_blocks      = [ var.vpc2_cidr ]
@@ -21,6 +21,8 @@ module "proxy_ec2" {
   ec2_ssh_enabled         = true
   ec2_ssh_keypair_name    = var.ec2_ssh_keypair_name
   ssh_source_cidr_blocks  = [ var.vpc3_cidr ]
+
+  min_cluster_size        = 2
 
   ecr_registry_id         = aws_ecr_repository.registry.registry_id
   ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"
@@ -36,14 +38,15 @@ module "proxy_ec2_endpoint" {
   endpoint_service_name   = module.proxy_ec2.endpoint_service_name
 
   vpc_id                  = aws_vpc.vpc1.id
-  #subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id, aws_subnet.vpc1_subnet_priv2.id ] 
-  subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id ] 
+  subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id, aws_subnet.vpc1_subnet_priv2.id ] 
+  #subnet_ids              = [ aws_subnet.vpc1_subnet_priv1.id ] 
   dns_zone_id             = aws_route53_zone.dns_zone.zone_id  
   dns_custom_hostname     = "proxy-ec2-vpce"
   source_cidr_blocks      = [ var.vpc1_cidr ]
 
   proxy_config            = local.ec2_proxy_config
   
+  #depends_on              = [ module.proxy_ec2 ]
   common_tags             = local.common_tags
 }
 
