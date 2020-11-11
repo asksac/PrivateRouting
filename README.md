@@ -2,40 +2,54 @@
 
 ## Overview
 
-This repo offers an example of how network connections can be securely
-routed from an AWS VPC to any external network that uses public IP addresses, 
-using a cluster of HAProxy deployed on AWS Fargate or on a cluster of EC2 instances.  
+This repo offers an example of how network connections can be securely routed from an AWS 
+VPC to a backend network (such as an on-premise network) using a TCP proxy. This may be 
+needed in scenarios such as when the backend network uses public IP address space, or 
+when destination network address translation (DNAT) is required. AWS offers a managed NAT
+Gateway, but it only supports source network address translation (SNAT) and requires an 
+Internet Gateway (in some cases, Internet Gateways are prohibited for security reasons).
 
-HAProxy is used here as a lightweight and highly performant L4 TCP proxy that 
+TCP proxy is implemented using the popular open-source [HAProxy](http://www.haproxy.org/) 
+load balancer. HAProxy is used as a lightweight and high-performance L4 TCP proxy which 
 supports DNS based backend hostnames. 
+
+This repo uses Terraform to deploy the proxy infrastructure on AWS. It uses Packer to 
+create a custom EC2 AMI, and to build and deploy a Docker container image for HAProxy. 
+Refer to [Deployment](#Deployment) section for more details. 
+
+
+## Modules 
+
+This repo offers several Terraform modules to assist in deployment and testing. These are: 
+| Module name | Doc page | Used to |
+| --- | --- | --- |
+| proxy_ecs | [README](tf_modules/proxy_ecs/README.md) | deploy HAProxy on an ECS Fargate cluster |
+| proxy_ec2 | [README](tf_modules/proxy_ec2/README.md) | deploy HAProxy on an EC2 cluster |
+| proxy_endpoint | [README](tf_modules/proxy_endpoint/README.md) | create a VPC endpoint to an HAProxy cluster |
+| test_websvr | [README](tf_modules/test_websvr/README.md) | create a WebServer instance for testing |
+| test_client | [README](tf_modules/test_client/README.md) | create a client instance for testing |
+| _root_ | [README](TFROOT.md) | setup a demo environment using all modules |
 
 
 ## Diagram
 
-The diagram below shows how networking and infrastructure is setup in this
-project: 
+HAProxy can be deployed using either `ECS on Fargate cluster` or `EC2 Auto Scaling cluster` 
+depending on preference and project complexity. The diagrams below shows a reference networking 
+and infrastructure setup for deployment scenarios. 
 
-![AWS VPC network diagram](docs/images/aws_vpc_diagram.png)
+| HAProxy on ECS Fargate cluster | HAProxy on EC2 cluster |
+| :---: | :---: |
+| [Figure 1](docs/images/diagram_haproxy_ecs_fargate.png) | [Figure 2](docs/images/diagram_haproxy_ec2.png) |
+| <img src="docs/images/diagram_haproxy_ecs_fargate.png" width="500"/> | <img src="docs/images/diagram_haproxy_ec2.png" width="500"> |
+| [Module: proxy_ecs](tf_modules/proxy_ecs/) | [Module: proxy_ec2](tf_modules/proxy_ec2/) |
 
 
 ## Deployment
 
-### 1. Build the AMI and ECS Container Image
+### Building AMI and ECS Container Image
 
 Refer to [this page](build/README.md) for instructions on building AMI and 
 Docker container image. 
-
-## Limitations 
-
-The current design has a few limitations to be aware of. 
-
-#### HAProxy on Amazon ECS on AWS Fargate
-- A maximum of 5 proxy config rules can be defined in a single cluster
-- Updating proxy config causes entire ECS Service to be destroyed and recreated, 
-resulting in some downtime
-- HAProxy configuration must be less than 8kb in size (that should never be an issue
-as a maximum of 5 rules are supported at the moment)
-
 
 ## Troubleshooting
 
