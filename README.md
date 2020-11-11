@@ -113,7 +113,7 @@ License     : GPLv2+
 ...
 ```
 
-> :bell: Note: The HAProxy Docker container image used in this project is based on the image published on ![Docker Hub](https://hub.docker.com/_/haproxy). If you do not have Internet access, you will need to pull the Docker Hub image from a machine with Internet access and then push the image to a private registry such as Amazon ECR. 
+> :bell: Note: The HAProxy Docker container image used in this project is based on the image published on [Docker Hub](https://hub.docker.com/_/haproxy). If you do not have Internet access, you will need to pull the Docker Hub image from a machine with Internet access and then push the image to a private registry such as Amazon ECR. 
 
 To generate a self-signed SSL certificate required to run `server.py` with `--tls` flag, run the 
 following command: 
