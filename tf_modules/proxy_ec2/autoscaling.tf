@@ -34,7 +34,7 @@ resource "aws_autoscaling_group" "proxysvr_asg" {
   max_size                = var.max_cluster_size
   desired_capacity        = var.min_cluster_size
 
-  health_check_type       = "EC2"
+  health_check_type       = "ELB"
   vpc_zone_identifier     = var.subnet_ids
 
   launch_template {
