@@ -39,19 +39,19 @@
  */
 
 terraform {
-  required_version    = ">= 0.12"
+  required_version        = ">= 0.12"
   required_providers {
-    aws               = ">= 3.11.0"
+    aws                   = ">= 3.11.0"
   }
 }
 
 locals {
   # convert list into map keyed on name, as for_each requires map type
   # ignore any list objects where name contains non-alpha-numeric-hyphen chars
-  port_mappings_map   = {
+  port_mappings_map       = {
     for pm in var.proxy_config.port_mappings: 
-    pm.name => pm
-    if can(regex("^[0-9A-Za-z-]+$", pm.name)) 
+      pm.name => pm
+      if can(regex("^[0-9A-Za-z-]+$", pm.name)) 
   }
 }
 
@@ -65,6 +65,11 @@ resource "aws_vpc_endpoint" "vpce" {
 
   security_group_ids      = [ aws_security_group.endpoint_sg.id ]
   tags                    = merge(var.common_tags, map("Name", "${var.app_shortcode}-endpoint-${var.dns_custom_hostname}"))
+
+  depends_on              = [ var.endpoint_service_name ]
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_route53_record" "vpce_alias_dns" {

@@ -6,4 +6,5 @@ resource "aws_vpc_endpoint_service" "vpces_nlb" {
   lifecycle {
     create_before_destroy     = true
   }
+  depends_on                  = [ aws_lb.nlb ]
 }
