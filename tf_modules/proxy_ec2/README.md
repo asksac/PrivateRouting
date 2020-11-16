@@ -1,6 +1,6 @@
 # Module: proxy\_ec2
 
-This module can be used to deploy an HAProxy cluster running on EC2 instances, and managed by an EC2 Auto Scaling group.
+This module can be used to deploy an HAProxy cluster running on EC2 instances, and managed by an EC2 Auto Scaling group. Each instance of the module can support upto 50 port mappings in the proxy configuration.
 
 ### Usage:
 
@@ -13,7 +13,7 @@ module "proxy_ec2" {
   app_shortcode             = "prt"
 
   vpc_id                    = aws_vpc.my_routable_vpc.id
-  subnet_ids                = [ aws_subnet.my_routable_vpc_subnet1.id ]
+  subnet_ids                = [ aws_subnet.my_routable_vpc_subnet1.id, aws_subnet.my_routable_vpc_subnet2.id ]
 
   dns_zone_id               = aws_route53_zone.my_dns_zone.zone_id
   dns_custom_hostname       = "myproxy"
@@ -38,11 +38,19 @@ module "proxy_ec2" {
     port_mappings           = [
       {
         name                = "api_svc"
-        description         = "Connection to backend API service"
+        description         = "HTTPS connection to backend API service"
         backend_host        = "api.corp.mydomain.net"
         backend_port        = 443
         nlb_port            = 8443
         proxy_port          = 8443
+      },
+      {
+        name                = "sftp_svr"
+        description         = "SFTP connection to backend file server"
+        backend_host        = "filesvr.corp.mydomain.net"
+        backend_port        = 22
+        nlb_port            = 7022
+        proxy_port          = 7022
       }
     ]
   }

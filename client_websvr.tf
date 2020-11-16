@@ -10,6 +10,7 @@ module "test_websvr" {
 
   ec2_ami_id            = data.aws_ami.ec2_ami.id
   ec2_instance_type     = "c5.large"
+  ec2_ssh_enabled       = var.ec2_ssh_enabled
   ec2_ssh_keypair_name  = var.ec2_ssh_keypair_name
 
   vpc_id                = aws_vpc.vpc3.id
@@ -34,6 +35,7 @@ module "test_client" {
 
   ec2_ami_id            = data.aws_ami.ec2_ami.id
   ec2_instance_type     = "m5.large"
+  ec2_ssh_enabled       = var.ec2_ssh_enabled
   ec2_ssh_keypair_name  = var.ec2_ssh_keypair_name
 
   vpc_id                = aws_vpc.vpc1.id

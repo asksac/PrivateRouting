@@ -17,6 +17,7 @@
  * 
  *   ec2_ami_id            = data.aws_ami.ec2_ami.id
  *   ec2_instance_type     = "m5.large"
+ *   ec2_ssh_enabled       = true
  *   ec2_ssh_keypair_name  = "my_ssh_keypair"
  * 
  *   vpc_id                = aws_vpc.my_backend_vpc.id
@@ -88,7 +89,7 @@ resource "aws_security_group" "websvr_sg" {
 resource "aws_instance" "websvr" {
   ami                     = var.ec2_ami_id
   instance_type           = var.ec2_instance_type
-  key_name                = var.ec2_ssh_keypair_name
+  key_name                = var.ec2_ssh_enabled ? var.ec2_ssh_keypair_name : null 
   user_data               = local.websvr_user_data
 
   subnet_id               = var.subnet_id

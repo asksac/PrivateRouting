@@ -18,7 +18,7 @@ module "proxy_ec2" {
   source_cidr_blocks      = [ var.vpc2_cidr ]
 
   ec2_ami_id              = data.aws_ami.ec2_ami.id
-  ec2_ssh_enabled         = true
+  ec2_ssh_enabled         = var.ec2_ssh_enabled
   ec2_ssh_keypair_name    = var.ec2_ssh_keypair_name
   ssh_source_cidr_blocks  = [ var.vpc3_cidr ]
 

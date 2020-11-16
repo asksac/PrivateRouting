@@ -1,6 +1,6 @@
 # Module: proxy\_ecs
 
-This module can be used to deploy HAProxy running on an ECS Fargate cluster, with capacity automatically managed based on specified min and max cluster sizes, and auto-scaling low and high cpu marks. Each module can support up to 50 `port_mappings` rules specified through `proxy_config` variable. Module will create multiple ECS Services, one for every 5 port mapping rules.
+This module can be used to deploy HAProxy running on an ECS Fargate cluster, with capacity automatically managed based on specified min and max cluster sizes, and auto-scaling low and high cpu marks. Each module can support up to 50 port mapping rules specified through `proxy_config` variable. Module will create multiple ECS Services, one for every 5 port mapping rules.
 
 ### Usage:
 
@@ -13,7 +13,7 @@ module "proxy_ecs" {
   app_shortcode             = "prt"
 
   vpc_id                    = aws_vpc.my_routable_vpc.id
-  subnet_ids                = [ aws_subnet.my_routable_vpc_subnet1.id ]
+  subnet_ids                = [ aws_subnet.my_routable_vpc_subnet1.id, aws_subnet.my_routable_vpc_subnet2.id ]
 
   dns_zone_id               = aws_route53_zone.my_dns_zone.zone_id
   dns_custom_hostname       = "myproxy"
@@ -31,11 +31,19 @@ module "proxy_ecs" {
     port_mappings           = [
       {
         name                = "api_svc"
-        description         = "Connection to backend API service"
+        description         = "HTTPS connection to backend API service"
         backend_host        = "api.corp.mydomain.net"
         backend_port        = 443
         nlb_port            = 8443
         proxy_port          = 8443
+      },
+      {
+        name                = "sftp_svr"
+        description         = "SFTP connection to backend file server"
+        backend_host        = "filesvr.corp.mydomain.net"
+        backend_port        = 22
+        nlb_port            = 7022
+        proxy_port          = 7022
       }
     ]
   }
@@ -70,8 +78,8 @@ module "proxy_ecs" {
 | dns\_custom\_hostname | Specify a custom DNS record name to map to NLB | `string` | n/a | yes |
 | source\_cidr\_blocks | Specify list of source CIDR ranges for security group's ingress rules | `list` | n/a | yes |
 | ecr\_image\_uri | Specify the HAProxy ECR container image URI with tag | `string` | n/a | yes |
-| min\_cluster\_size | Specify minimum number of tasks maintained in the proxy cluster | `number` | `2` | no |
-| max\_cluster\_size | Specify maximum number of tasks allowed in the proxy cluster | `number` | `8` | no |
+| min\_cluster\_size | Specify minimum number of tasks maintained for each ECS service in the proxy cluster | `number` | `2` | no |
+| max\_cluster\_size | Specify maximum number of tasks allowed for each ECS service in the proxy cluster | `number` | `8` | no |
 | autoscaling\_low\_cpu\_mark | Specify the low CPU utilization watermark for cluster scale-in | `number` | `20` | no |
 | autoscaling\_high\_cpu\_mark | Specify the high CPU utilization watermark for cluster scale-out | `number` | `70` | no |
 | proxy\_config | Specify proxy's configuration consisting of a unique name and a list of port mapping rules | <pre>object({<br>    service_name          = string<br>    port_mappings         = list(object({<br>      name                = string<br>      description         = string<br>      backend_host        = string<br>      backend_port        = number<br>      nlb_port            = number<br>      proxy_port          = number<br>    }))<br>  })</pre> | n/a | yes |

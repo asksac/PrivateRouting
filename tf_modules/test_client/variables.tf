@@ -30,9 +30,16 @@ variable "ec2_instance_type" {
   description             = "Specify EC2 instance type, e.g. m5.large"
 }
 
+variable "ec2_ssh_enabled" {
+  type                    = bool 
+  default                 = false
+  description             = "Specify whether ssh access into ec2 instances are enabled"
+}
+
 variable "ec2_ssh_keypair_name" {
   type                    = string
-  description             = "Specify name of an existing EC2 keypair, e.g. my_key"
+  default                 = null 
+  description             = "Specify name of an existing keypair for SSH access into ec2 instance, e.g. my_key"
 }
 
 variable "ssh_source_cidr_blocks" {

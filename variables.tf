@@ -28,9 +28,16 @@ variable "aws_env" {
   description             = "Specify a value for the Environment tag"
 }
 
+variable "ec2_ssh_enabled" {
+  type                    = bool 
+  default                 = false
+  description             = "Specify whether ssh access into ec2 instances are enabled"
+}
+
 variable "ec2_ssh_keypair_name" {
   type                    = string
-  description             = "Specify name of an existing keypair for SSH access into EC2 instances"
+  default                 = null 
+  description             = "Specify name of an existing keypair for SSH access into ec2 instances, e.g. my_key"
 }
 
 ## VPC #1 ##

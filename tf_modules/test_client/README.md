@@ -13,6 +13,7 @@ module "test_client" {
 
   ec2_ami_id            = data.aws_ami.ec2_ami.id
   ec2_instance_type     = "m5.large"
+  ec2_ssh_enabled       = true
   ec2_ssh_keypair_name  = "my_ssh_keypair"
 
   vpc_id                = aws_vpc.my_non_routable_vpc.id
@@ -48,7 +49,8 @@ module "test_client" {
 | subnet\_id | Specify a Subnet ID for the client ec2 instance | `string` | n/a | yes |
 | ec2\_ami\_id | Specify an AMI ID to be used for EC2 instance creation | `string` | n/a | yes |
 | ec2\_instance\_type | Specify EC2 instance type, e.g. m5.large | `string` | `"m5.large"` | no |
-| ec2\_ssh\_keypair\_name | Specify name of an existing EC2 keypair, e.g. my\_key | `string` | n/a | yes |
+| ec2\_ssh\_enabled | Specify whether ssh access into ec2 instances are enabled | `bool` | `false` | no |
+| ec2\_ssh\_keypair\_name | Specify name of an existing keypair for SSH access into ec2 instance, e.g. my\_key | `string` | `null` | no |
 | ssh\_source\_cidr\_blocks | Specify list of source CIDR ranges for security group's SSH ingress | `list` | n/a | yes |
 | s3\_endpoint\_enabled | If true, an S3 VPC endpoint (Gateway style) will be created to enable access to Amazon Linux yum repos | `bool` | `false` | no |
 | vpc\_route\_table\_id | Specify a Route Table ID associated with the VPC where client instance is deployed; this enables route to S3 VPC endpoint | `string` | `null` | no |
