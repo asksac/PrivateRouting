@@ -11,7 +11,7 @@ sections:
     - requirements
 
 sort: 
-  enabled: false
+  enabled: true
 
 settings: 
   color: true
