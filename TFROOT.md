@@ -24,12 +24,15 @@ The default configuration for the demo environment is based on variables and val
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| aws\_profile | Specify an aws profile name to be used for access credentials (run `aws configure help` for more information on creating a new profile) | `string` | `"default"` | no |
-| aws\_region | Specify the AWS region to be used for resource creations | `string` | `"us-east-1"` | no |
+| addon\_nlb\_port | Specify an nlb listener port for direct bypass forwarding rule | `number` | `10080` | no |
+| addon\_websvr\_port | Specify the backend webserver port to use for direct bypass rule | `number` | `8080` | no |
 | app\_name | Specify an application or project name, used primarily for tagging as well as searching for custom AMI id | `string` | `"PrivateRouting"` | no |
 | app\_shortcode | Specify a short-code or pneumonic for this application or project | `string` | `"prt"` | no |
 | aws\_env | Specify a value for the Environment tag | `string` | `"dev"` | no |
-| ec2\_ssh\_keypair\_name | Specify name of an existing keypair for SSH access into EC2 instances | `string` | n/a | yes |
+| aws\_profile | Specify an aws profile name to be used for access credentials (run `aws configure help` for more information on creating a new profile) | `string` | `"default"` | no |
+| aws\_region | Specify the AWS region to be used for resource creations | `string` | `"us-east-1"` | no |
+| ec2\_ssh\_enabled | Specify whether ssh access into ec2 instances are enabled | `bool` | `false` | no |
+| ec2\_ssh\_keypair\_name | Specify name of an existing keypair for SSH access into ec2 instances, e.g. my\_key | `string` | `null` | no |
 | vpc1\_cidr | Specify CIDR range for VPC 1 (simulating non\_routable\_vpc) | `string` | `"10.0.0.0/16"` | no |
 | vpc1\_name | Specify a name for VPC 1 for labeling purposes | `string` | `"vpc1"` | no |
 | vpc1\_subnet\_priv1\_cidr | Specify a CIDR range for first private subnet within VPC 1 | `string` | `"10.0.1.0/24"` | no |
@@ -46,15 +49,13 @@ The default configuration for the demo environment is based on variables and val
 | vpc3\_name | Specify a name for VPC 3 for labeling purposes | `string` | `"vpc3"` | no |
 | vpc3\_subnet\_pub1\_cidr | Specify a CIDR range for first public subnet within VPC 3 | `string` | `"192.168.1.0/24"` | no |
 | vpc3\_subnet\_pub1\_name | Specify a name for first public subnet for labeling purposes | `string` | `"vpc3_pub1"` | no |
-| addon\_nlb\_port | Specify an nlb listener port for direct bypass forwarding rule | `number` | `10080` | no |
-| addon\_websvr\_port | Specify the backend webserver port to use for direct bypass rule | `number` | `8080` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
+| client\_details | DNS values of Test Client instance |
+| proxy\_ec2 | DNS values of NLB and Endpoint associated with HAProxy on EC2 cluster |
 | proxy\_ecs | DNS values of NLB and Endpoint associated with HAProxy on ECS cluster |
 | webserver\_details | DNS values of Test WebServer instance |
-| proxy\_ec2 | DNS values of NLB and Endpoint associated with HAProxy on EC2 cluster |
-| client\_details | DNS values of Test Client instance |
 
