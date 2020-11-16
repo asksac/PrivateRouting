@@ -47,13 +47,13 @@ variable "ecr_image_uri" {
 variable "min_cluster_size" {
   type                    = number
   default                 = 2
-  description             = "Specify minimum number of tasks maintained in the proxy cluster"
+  description             = "Specify minimum number of tasks maintained for each ECS service in the proxy cluster"
 }
 
 variable "max_cluster_size" {
   type                    = number
   default                 = 8
-  description             = "Specify maximum number of tasks allowed in the proxy cluster"
+  description             = "Specify maximum number of tasks allowed for each ECS service in the proxy cluster"
 }
 
 variable "autoscaling_low_cpu_mark" {

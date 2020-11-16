@@ -13,7 +13,7 @@
  *
  *   endpoint_service_name     = module.proxy_ecs.endpoint_service_name
  *   vpc_id                    = aws_vpc.my_non_routable_vpc.id
- *   subnet_ids                = [ aws_subnet.my_non_routable_vpc_subnet1.id ]
+ *   subnet_ids                = [ aws_subnet.my_routable_vpc_subnet1.id, aws_subnet.my_routable_vpc_subnet2.id ]
  *   source_cidr_blocks        = [ aws_vpc.my_non_routable_vpc.cidr_block ]
  * 
  *   dns_zone_id               = aws_route53_zone.dns_zone.zone_id  
@@ -24,11 +24,19 @@
  *     port_mappings           = [
  *       {
  *         name                = "api_svc"
- *         description         = "Connection to backend API service"
+ *         description         = "HTTPS connection to backend API service"
  *         backend_host        = "api.corp.mydomain.net"
  *         backend_port        = 443
  *         nlb_port            = 8443
  *         proxy_port          = 8443
+ *       }, 
+ *       {
+ *         name                = "sftp_svr"
+ *         description         = "SFTP connection to backend file server"
+ *         backend_host        = "filesvr.corp.mydomain.net"
+ *         backend_port        = 22
+ *         nlb_port            = 7022
+ *         proxy_port          = 7022
  *       }
  *     ]
  *   }
