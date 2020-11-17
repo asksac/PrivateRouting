@@ -6,15 +6,15 @@
 
 2. Switch to build directory (`cd build`)
 
-3. Create a `packer.pkrvars.hcl` file with your own values of following required variables: 
+3. Create a `packer.pkrvars.hcl` file with your own values of variables, as shown below: 
 
 ```hcl
-    profile           = "terraform" # name of aws cli profile
-    region            = "us-east-2" # your selected aws region
-    app_name          = "ProxyRouting" # app/project name
-    app_shortname     = "prt" # app/project short name
-    proxy_image_repo  = "accountid.dkr.ecr.us-east-1.amazonaws.com/haproxy-registry"  # ecr repo uri
-    proxy_image_tag   = "latest" # ecr repo image tag
+    profile           = "terraform"  # name of aws cli profile
+    region            = "us-east-2"  # your selected aws region
+    app_name          = "ProxyRouting"  # app/project name
+    app_shortname     = "prt"  # app/project short name
+    proxy_image_repo  = "accountid.dkr.ecr.us-east-2.amazonaws.com/haproxy-registry"  # ecr repo uri
+    proxy_image_tag   = "latest"  # ecr repo image tag
 ```
 
 > :information_source: Value specified for `proxy_image_repo` must correspond to the output 
