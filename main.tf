@@ -40,7 +40,7 @@ data "aws_ami" "ec2_ami" {
 # Creates an ECR repository for storing HAProxy docker container image 
 #
 resource "aws_ecr_repository" "registry" {
-  name                        = "${var.app_shortcode}-registry"
+  name                        = var.ecr_proxy_image_repo_name
   image_tag_mutability        = "MUTABLE"
 
   image_scanning_configuration {
@@ -72,4 +72,22 @@ resource "aws_route53_zone" "dns_zone" {
   vpc {
       vpc_id                = aws_vpc.vpc3.id
   }
+}
+
+#
+# Output values
+#
+output "ec2_ami_arn" {
+  value                     = data.aws_ami.ec2_ami.arn
+  description               = "AMI ARN used for EC2 instance creation"
+}
+
+output "proxy_image_repo" {
+  value                     = aws_ecr_repository.registry.repository_url
+  description               = "ECR repository image URI for HAProxy container image"
+}
+
+output "dns_zone_name" {
+  value                     = aws_route53_zone.dns_zone.name
+  description               = "Base domain name under which all alias dns records are created"
 }
