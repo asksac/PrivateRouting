@@ -40,6 +40,18 @@ variable "ec2_ssh_keypair_name" {
   description             = "Specify name of an existing keypair for SSH access into ec2 instances, e.g. my_key"
 }
 
+variable "ecr_proxy_image_repo_name" {
+  type                    = string
+  default                 = "haproxy-registry" 
+  description             = "Specify ECR repository name for storing HAProxy container image"
+}
+
+variable "ecr_proxy_image_tag" {
+  type                    = string
+  default                 = "latest" 
+  description             = "Specify ECR image tag to be used for pulling HAProxy container image"
+}
+
 ## VPC #1 ##
 
 # using an RFC 1918 reserved IP range

@@ -20,7 +20,7 @@
  *   dns_custom_hostname       = "myproxy"
  *
  *   source_cidr_blocks        = [ aws_vpc.my_routable_vpc.cidr_block ]
- *   ecr_image_uri             = "${aws_ecr_repository.my_registry.repository_url}:1.0"
+ *   ecr_image_uri             = "${aws_ecr_repository.my_registry.repository_url}:latest"
  *
  *   min_cluster_size          = 1
  *   max_cluster_size          = 4

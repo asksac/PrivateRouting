@@ -25,7 +25,7 @@ module "proxy_ec2" {
   min_cluster_size        = 2
 
   ecr_registry_id         = aws_ecr_repository.registry.registry_id
-  ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"
+  ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:${var.ecr_proxy_image_tag}"
   proxy_config            = local.ec2_proxy_config
 
   common_tags             = local.common_tags

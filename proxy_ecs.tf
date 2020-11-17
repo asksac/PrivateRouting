@@ -16,7 +16,7 @@ module "proxy_ecs" {
   dns_custom_hostname     = "proxy-ecs-nlb"
   source_cidr_blocks      = [ var.vpc2_cidr ]
 
-  ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:1.0"
+  ecr_image_uri           = "${aws_ecr_repository.registry.repository_url}:${var.ecr_proxy_image_tag}"
   proxy_config            = local.ecs_proxy_config
 
   common_tags             = local.common_tags
