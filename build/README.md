@@ -8,12 +8,14 @@
 
 3. Create a `packer.pkrvars.hcl` file with your own values of following required variables: 
 
-    - `profile           = <name of aws cli profile e.g. "terraform">`
-    - `region            = <your selected aws region, e.g. "us-east-2">`
-    - `app_name          = <app/project name, e.g. "ProxyRouting">`
-    - `app_shortname     = <app/project short name, e.g."prt">`
-    - `proxy_image_repo  = <ecr repo name, e.g. "accountid.dkr.ecr.us-east-1.amazonaws.com/haproxy-registry">`
-    - `proxy_image_tag   = <ecr repo tag, e.g. "latest">`
+```hcl
+    profile           = "terraform" # name of aws cli profile
+    region            = "us-east-2" # your selected aws region
+    app_name          = "ProxyRouting" # app/project name
+    app_shortname     = "prt" # app/project short name
+    proxy_image_repo  = "accountid.dkr.ecr.us-east-1.amazonaws.com/haproxy-registry"  # ecr repo uri
+    proxy_image_tag   = "latest" # ecr repo image tag
+```
 
 > :information_source: Value specified for `proxy_image_repo` must correspond to the output 
 value from running _Step 3. Create an ECR repository_ on the main [README page](../README.md). 
