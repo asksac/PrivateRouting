@@ -33,6 +33,8 @@ The default configuration for the demo environment is based on variables and val
 | aws\_region | Specify the AWS region to be used for resource creations | `string` | `"us-east-1"` | no |
 | ec2\_ssh\_enabled | Specify whether ssh access into ec2 instances are enabled | `bool` | `false` | no |
 | ec2\_ssh\_keypair\_name | Specify name of an existing keypair for SSH access into ec2 instances, e.g. my\_key | `string` | `null` | no |
+| ecr\_proxy\_image\_repo\_name | Specify ECR repository name for storing HAProxy container image | `string` | `"haproxy-registry"` | no |
+| ecr\_proxy\_image\_tag | Specify ECR image tag to be used for pulling HAProxy container image | `string` | `"latest"` | no |
 | vpc1\_cidr | Specify CIDR range for VPC 1 (simulating non\_routable\_vpc) | `string` | `"10.0.0.0/16"` | no |
 | vpc1\_name | Specify a name for VPC 1 for labeling purposes | `string` | `"vpc1"` | no |
 | vpc1\_subnet\_priv1\_cidr | Specify a CIDR range for first private subnet within VPC 1 | `string` | `"10.0.1.0/24"` | no |
@@ -55,7 +57,10 @@ The default configuration for the demo environment is based on variables and val
 | Name | Description |
 |------|-------------|
 | client\_details | DNS values of Test Client instance |
+| dns\_zone\_name | Base domain name under which all alias dns records are created |
+| ec2\_ami\_arn | AMI ARN used for EC2 instance creation |
 | proxy\_ec2 | DNS values of NLB and Endpoint associated with HAProxy on EC2 cluster |
 | proxy\_ecs | DNS values of NLB and Endpoint associated with HAProxy on ECS cluster |
+| proxy\_image\_repo | ECR repository image URI for HAProxy container image |
 | webserver\_details | DNS values of Test WebServer instance |
 
