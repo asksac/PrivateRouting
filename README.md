@@ -9,7 +9,19 @@ when destination network address translation (DNAT) is required. AWS offers a ma
 Gateway, but that supports source network address translation (SNAT) only, does not work 
 across VPCs and requires an Internet Gateway (which may be restricted due to security and 
 compliance reasons). TCP proxy is therefore often an essential component of an application's
-networking infrastructure. 
+networking infrastructure. See the simple diagram below for an illustration of how TCP proxy
+can help with network routing: 
+
+_Without a proxy:_
+<pre>
+          (cannot route)
+Client  ------- ... -------> Server
+</pre>
+
+_Using a TCP proxy:_
+<pre>
+Client ----> TCP Proxy ----> Server
+</pre>
 
 TCP proxy here is implemented using the popular open-source [HAProxy](//www.haproxy.org/) 
 load balancer. HAProxy is a lightweight and high-performance L4 TCP proxy with a rich set 
@@ -19,7 +31,7 @@ This repo uses `Terraform` to deploy the proxy infrastructure on AWS. It also us
 to create custom EC2 AMI, as well as to build and deploy Docker container image for 
 HAProxy. Refer to [Installation](#Installation) section for more details. 
 
-
+&nbsp;
 ## Modules 
 
 This repo offers several Terraform modules to assist with deployment and testing. These 
@@ -39,7 +51,7 @@ in the next section below. Here is a list of Terraform modules provided in this 
 | test_websvr | [README](tf_modules/test_websvr/README.md) | create a WebServer instance for demo/testing purposes only |
 | _root module_ | [README](TFROOT.md) | setup a demo environment implementing all modules above |
 
-
+&nbsp;
 ## Diagrams
 
 HAProxy can be deployed using either `ECS on Fargate cluster` or `EC2 Auto Scaling cluster` module,
@@ -50,9 +62,9 @@ and infrastructure setup for each deployment scenario:
 | :---: | :---: |
 | [Figure 1](docs/images/diagram_haproxy_ecs_fargate.png)<br><img src="docs/images/diagram_haproxy_ecs_fargate.png" width="500"/> | [Figure 2](docs/images/diagram_haproxy_ec2.png)<br><img src="docs/images/diagram_haproxy_ec2.png" width="500"> |
 | Primary module: [proxy_ecs](tf_modules/proxy_ecs/) | Primary module: [proxy_ec2](tf_modules/proxy_ec2/) |
-| Ideal for:<br><li>smaller number of proxy rules, <li>where serverless deployments is preferred | Ideal for:<br><li>large number of proxy rules required, <li>lower cost by deploying fewer resources |
+| Ideal for:<br><li>smaller number of proxy rules (1 - 10 rules)<li>where serverless deployments is preferred | Ideal for:<br><li>larger number of proxy rules (11 - 50 rules)<li>lower cost by deploying fewer resources |
 
-
+&nbsp;
 ## Installation
 
 Follow these steps to get up and running with a fully working demo environment: 
@@ -110,18 +122,22 @@ ecr_proxy_image_tag         = "latest"
 
 Additionally, listen ports for test webserver instance, as well as proxy configuration 
 rules and port mappings may be customized by directly editing [`locals.tf`](./locals.tf)
-file. If left unchanged, test_websvr ec2 instance created in the demo environment will 
-listen on following ports: 
+file. If left unchanged, test_websvr ec2 instance and both proxy modules created in the 
+demo environment will listen on following ports: 
 
-- Nginx webserver: listens on ports 8080 - 8085 (http)
-- Python based echo server: listens on port 80 (http) and 443 (https)
-- SSH daemon: listens on port 22 (cannot be customized currently)
+| WebServer Listner | WebServer Port(s) | Proxy Port(s) |
+| --- | --- | --- |
+| Nginx HTTP Server | 8080 - 8085 (http) | 8080 - 8085 (http) |
+| Nginx HTTPS Server | 8443 (https) | 9443 (https) |
+| Python HTTP Echo | 80 (http) | 7080 (http) |
+| Python HTTPS Echo | 443 (https) | 7443 (https) |
+| SSH daemon | 22 (cannot be changed) | 7022 |
 
-### 3. Create ECR registry 
+### 3. Create an ECR repository 
 
 Before executing the Terraform configurations and creating resources, an ECR repository 
 must be created. This repository will store the HAProxy Docker container image that is 
-created in the next step. To create the repository, run the following commands: 
+created in the next step. To create, run the following commands: 
 
 ```shell 
 terraform init 
@@ -151,7 +167,7 @@ This step may take several minutes to complete, and longer if there are a large 
 of port mappings defined in `locals.tf` file. At the end, it will output several important 
 configuration values that must be noted for testing and validation steps (next section). 
 
-
+&nbsp;
 ## Testing the Demo Environment
 
 Assuming Terraform configuration in the last step above completes successfully, you 
@@ -196,7 +212,7 @@ curl http://proxy-ecs-vpce.prt.internal:8080/
 curl -k https://proxy-ecs-vpce.prt.internal:8443/
 ```
 
-
+&nbsp;
 ## Troubleshooting
 
 ### Useful commands
@@ -263,8 +279,8 @@ License     : GPLv2+
 As a result, HAProxy container image used in this project is based on the official HAProxy 
 image published on [Docker Hub](https://hub.docker.com/_/haproxy). If you do not have 
 Internet access from the Packer build machine, you can manually pull the Docker Hub image 
-from a machine with Internet access and then push the image onto a private registry such as 
-Amazon ECR, and then edit `build/docker_build.pkr.hcl` to point to the private source repo. 
+from a machine with Internet access, then push the image onto a private registry such as 
+Amazon ECR, and then edit `build/docker_build.pkr.hcl` to point to your private image repo. 
 
 ### Test WebServer and TLS certificates
 
