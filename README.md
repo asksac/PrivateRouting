@@ -40,7 +40,7 @@ in the next section below. Here is a list of Terraform modules provided in this 
 | _root module_ | [README](TFROOT.md) | setup a demo environment implementing all modules above |
 
 
-## Diagram
+## Diagrams
 
 HAProxy can be deployed using either `ECS on Fargate cluster` or `EC2 Auto Scaling cluster` module,
 depending on preference and project complexity. The diagrams below shows a reference networking 
@@ -50,7 +50,7 @@ and infrastructure setup for each deployment scenario:
 | :---: | :---: |
 | [Figure 1](docs/images/diagram_haproxy_ecs_fargate.png)<br><img src="docs/images/diagram_haproxy_ecs_fargate.png" width="500"/> | [Figure 2](docs/images/diagram_haproxy_ec2.png)<br><img src="docs/images/diagram_haproxy_ec2.png" width="500"> |
 | Primary module: [proxy_ecs](tf_modules/proxy_ecs/) | Primary module: [proxy_ec2](tf_modules/proxy_ec2/) |
-| Suitable for smaller number of proxy rules and where serverless deployments is preferred | Suitable where a large number of proxy rules are needed |
+| Ideal for:<br><li>smaller number of proxy rules, <li>where serverless deployments is preferred | Ideal for:<br><li>large number of proxy rules required, <li>lower cost by deploying fewer resources |
 
 
 ## Installation
@@ -266,7 +266,6 @@ Internet access from the Packer build machine, you can manually pull the Docker 
 from a machine with Internet access and then push the image onto a private registry such as 
 Amazon ECR, and then edit `build/docker_build.pkr.hcl` to point to the private source repo. 
 
-
 ### Test WebServer and TLS certificates
 
 The test_websvr module deploys an EC2 instance with a Python based echo server, as well as
@@ -284,11 +283,14 @@ openssl req -x509 -nodes -newkey rsa:1024 -keyout config/ssl/key.pem -out config
 ```
 
 > :warning: Never use the demo private key and self-signed certificate from this repo in 
-an actual project environment. As the key/cert are used for demo purposes only, it is 
-acceptable to generate private key file with no password (-nodes), self-signed certificate 
-with a longer expiration (-days 1825) and use fake certificate details (-subj), as shown 
-above. However, these settings must never be used to generate TLS certificates in an actual 
-project environments, or you risk severely compromising security of your environment. 
+an actual project environment. 
+
+> :warning: As the key/cert are used for demo purposes only, it is acceptable to generate 
+private key file with no password (-nodes), self-signed certificate with a longer expiration 
+(-days 1825) and use fake certificate details (-subj), as shown above. However, these 
+settings must never be used to generate TLS certificates in an actual project environments, 
+or you risk severely compromising security of your environment. 
+
 
 ## License
 
